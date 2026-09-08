@@ -69,6 +69,15 @@ export function fileDownloadUrl(relativeUrl: string): string {
   return `${API_BASE_URL}${relativeUrl}`;
 }
 
+// Direct link to the bundled example — for a plain <a download> so a curious
+// user can inspect the file before running it, same as Streamlit's
+// st.download_button("Télécharger l'exemple axe/terrain..."). A cross-origin
+// GET download via a plain anchor doesn't need CORS the way fetch() does, so
+// this works even before/without ALLOWED_ORIGIN being set for XHR reads.
+export function sampleFileUrl(kind: "axe" | "terrain"): string {
+  return `${API_BASE_URL}/samples/${kind}`;
+}
+
 // Fetches the same bundled example bytes the Streamlit app reads straight
 // off disk (road_designer.samples_api), wrapped as a File so the "Exemple
 // bundle" option can reuse the exact same upload code path as a real

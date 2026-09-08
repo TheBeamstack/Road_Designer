@@ -4,7 +4,7 @@ import { Field } from "@/components/ui/Field";
 import { Select } from "@/components/ui/Select";
 import { Section } from "@/components/ui/Section";
 import { Stepper, type StepDef } from "@/components/ui/Stepper";
-import { fetchSampleFile, ApiError } from "@/lib/api";
+import { fetchSampleFile, sampleFileUrl, ApiError } from "@/lib/api";
 import {
   REFT_PRESETS,
   defaultDesignConfig,
@@ -173,7 +173,16 @@ export function DesignForm({
                   className="text-sm"
                 />
               ) : (
-                <p className="text-xs text-muted">Utilise sample_axe.txt fourni avec le dépôt.</p>
+                <p className="text-xs text-muted">
+                  Utilise sample_axe.txt fourni avec le dépôt.{" "}
+                  <a
+                    href={sampleFileUrl("axe")}
+                    download="sample_axe.txt"
+                    className="font-medium text-signal hover:underline"
+                  >
+                    Télécharger l'exemple ↓
+                  </a>
+                </p>
               )}
               <p className="text-xs text-muted">
                 Format : PK0 X0 Y0, puis blocs D (droite) / C (courbe, avec XC/YC/R). Voir
@@ -223,12 +232,17 @@ export function DesignForm({
                 </p>
               ) : (
                 <p className="text-xs text-muted">
-                  Utilise sample_terrain.csv fourni avec le dépôt.
+                  Utilise sample_terrain.csv fourni avec le dépôt.{" "}
+                  <a
+                    href={sampleFileUrl("terrain")}
+                    download="sample_terrain.csv"
+                    className="font-medium text-signal hover:underline"
+                  >
+                    Télécharger l'exemple ↓
+                  </a>
                 </p>
               )}
             </div>
-
-            {sampleError && <p className="text-xs text-accent sm:col-span-2">{sampleError}</p>}
           </Section>
         </div>
       )}
@@ -592,6 +606,16 @@ export function DesignForm({
           )}
         </div>
       </div>
+
+      {/* Always visible regardless of step — a failed sample fetch (backend
+          unreachable, misconfigured VITE_API_BASE_URL, CORS) must never fail
+          silently just because the user isn't currently on step 1. */}
+      {sampleError && (
+        <div className="rounded-md border border-accent/30 bg-accent/5 px-4 py-3 text-sm text-accent">
+          <p className="font-semibold">Échec du chargement de l'exemple</p>
+          <p className="mt-0.5">{sampleError}</p>
+        </div>
+      )}
     </form>
   );
 }
