@@ -1,6 +1,6 @@
 # Road-Designer V 1.0
 
-A Python application that produces BET-grade civil-engineering road-design deliverables (tracé en plan, profil en long, profils en travers, tableau, cubatures, diagramme de Bruckner, cartouches A1) from a terrain database and a horizontal alignment file.
+A Python application (with a react frontend) that produces BET-grade civil-engineering road-design deliverables (tracé en plan, profil en long, profils en travers, tableau, cubatures, diagramme de Bruckner, cartouches A1) from a terrain database and a horizontal alignment file.
 
 Target user: a road-design civil engineer working in a Bureau d'Études Techniques (BET), Maghreb context, following Moroccan REFT standards (or equivalent ARP/ICTAAL). All on-drawing labels are in French.
 
