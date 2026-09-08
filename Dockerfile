@@ -8,15 +8,17 @@
 #   docker run --rm -p 8000:7860 road-designer-api        # → http://localhost:8000/health
 #
 # Port: the app listens on $PORT if set, else 7860.
+#   - Hugging Face Docker Spaces (current host, see DEPLOYMENT.md Part A) set no
+#     PORT, so it falls back to 7860, which is exactly what HF expects (no
+#     app_port override needed).
 #   - Google Cloud Run injects PORT (8080) automatically — nothing to configure.
-#   - Hugging Face Docker Spaces set no PORT, so it falls back to 7860, which is
-#     exactly what HF expects (no app_port override needed).
+#     Documented as a later-promotion path, DEPLOYMENT.md Part G.
 #   - Render / Koyeb / Fly inject their own PORT — also automatic.
 #
-# Cloud Run note: this backend runs design jobs in a background thread after the
-# HTTP response is sent, so deploy it with CPU always allocated
-# (`gcloud run deploy --no-cpu-throttling`), otherwise the background work is
-# throttled once the request returns. See DEPLOYMENT.md Part A.
+# Cloud Run note (only relevant if/when promoted there, Part G): this backend
+# runs design jobs in a background thread after the HTTP response is sent, so
+# deploy it with CPU always allocated (`gcloud run deploy --no-cpu-throttling`),
+# otherwise the background work is throttled once the request returns.
 
 FROM python:3.12-slim
 

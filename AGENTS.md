@@ -115,12 +115,17 @@ Road_designe/
 │                                  ← Beamstack Community License 1.1 + attribution / contributor terms (see § 11)
 ├── brand/                         ← Beamstack logo + usage rules for the attribution mark
 ├── Dockerfile                    ← backend image; build context = repo root; listens on ${PORT:-7860}
-├── .dockerignore / .gcloudignore  ← keep the backend build context / Cloud Build upload small
+├── .dockerignore / .gcloudignore  ← keep the backend build context small (Docker / Cloud Build); .gcloudignore
+│                                    only matters if the backend is later promoted to Cloud Run (§ 15 Part G)
 ├── requirements.txt               ← pinned, Python 3.12 target (engine + CLI + Streamlit)
+├── .streamlit/config.toml         ← MUST live here at repo root, not under frontends/streamlit/ — Streamlit
+│                                    Community Cloud only reads a config file from the repo root (§ 15)
 ├── .gitignore                     ← *.dxf, *.xlsx, *.pdf, Road_venv/, .venv/, output/
 ├── .github/
 │   └── workflows/
-│       └── keep-alive-backend.yml ← optional cron ping (BACKEND_HEALTH_URL secret); HF/Render/Koyeb only, NOT Cloud Run
+│       └── keep-alive-backend.yml ← optional cron ping (BACKEND_HEALTH_URL secret) to stop the backend
+│                                    sleeping; recommended for the current HF Spaces host (free to run
+│                                    there), NOT for Cloud Run with --no-cpu-throttling (§ 15 Part E vs G)
 │
 ├── main.py                        ← CLI entry point (unchanged)
 │
@@ -160,7 +165,8 @@ Road_designe/
 │
 ├── output/                        ← gitignored, local CLI dumps here
 │
-├── backend/                       ← FastAPI app (deploys to Google Cloud Run; HF Spaces is the documented alt)
+├── backend/                       ← FastAPI app (deploys to Hugging Face Spaces; Google Cloud Run is the
+│                                    documented later-promotion path, see § 15 Part G)
 │   ├── app/
 │   │   ├── main.py                ← FastAPI() instance, CORS via ALLOWED_ORIGIN env var, lifespan cleanup
 │   │   ├── schemas.py             ← Pydantic mirrors of DesignConfig/TypicalSection/CartoucheInfo
@@ -704,7 +710,7 @@ redeployed, or taken down without affecting the others:
 |---|---|---|---|
 | Streamlit app | `frontends/streamlit/app.py` | Streamlit Community Cloud (always-on fallback) | TODO(user): fill in after first real deploy |
 | React SPA | `frontends/react/` | Cloudflare Pages (static build), custom domain `road-designer.beam-stack.com` | TODO(user): confirm after first real deploy |
-| FastAPI service | `backend/` | **Google Cloud Run** (container, scale-to-zero, free tier). HF Spaces (Docker) is the documented alternative — **PRO only** since HF's 2025 pricing change. | TODO(user): fill in after first real deploy |
+| FastAPI service | `backend/` | **Hugging Face Spaces** (Docker SDK, `CPU Basic` hardware — needs a **PRO** account to create, hardware itself is $0/hour) — **current host**. Google Cloud Run is the documented later-promotion path (§ 15 Part G / `DEPLOYMENT.md` Part G) if usage ever outgrows a single flat-rate Space. | TODO(user): fill in after first real deploy |
 
 ```
                      ┌─────────────────────────┐
@@ -717,7 +723,7 @@ redeployed, or taken down without affecting the others:
                  ▼                                 ▼
    ┌───────────────────────────┐      ┌──────────────────────────────┐
    │ frontends/streamlit/app.py │      │  backend/app/  (FastAPI)      │
-   │ Streamlit Community Cloud  │      │  Google Cloud Run (Docker)    │
+   │ Streamlit Community Cloud  │      │  Hugging Face Spaces (Docker) │
    │ — unchanged product,       │      │  POST /designs, GET .../{id}, │
    │   own URL, own users       │      │  GET .../files/{kind},        │
    └───────────────────────────┘      │  GET .../preview, GET /health │
@@ -756,9 +762,10 @@ the independent variable, etc.) still applies untouched to any future engine wor
   for a synchronous design-generation tool where the client is expected to download its files
   promptly, but worth remembering if this ever needs to survive restarts.
 - **Background-thread CPU.** `build_design()` runs in a worker thread *after* the `202` is sent.
-  On Cloud Run this requires deploying with `--no-cpu-throttling` (CPU always allocated) or the
-  job stalls once the response returns; HF Spaces and most other hosts allocate CPU for the
-  instance lifetime by default.
+  HF Spaces (the current host) allocates CPU for the instance lifetime by default, so this needs
+  no special flag there. If the backend is ever promoted to Cloud Run (§ 15 Part G), that host
+  requires deploying with `--no-cpu-throttling` (CPU always allocated) or the job stalls once
+  the response returns.
 - **Request lifecycle:** `POST /designs` (multipart: axe file + either a terrain CSV or
   synth-terrain params + the `DesignConfigIn`/`CartoucheInfoIn` JSON) returns `202` + a job id
   immediately; the actual `build_design()` call runs in a worker thread. `GET /designs/{id}`
@@ -770,18 +777,22 @@ the independent variable, etc.) still applies untouched to any future engine wor
 - **Company-name validation is not a new rule** — `CartoucheInfoIn.company_name` in
   `backend/app/schemas.py` mirrors the same non-empty check `build_design()` already enforces; it
   just surfaces earlier, as an HTTP 422, instead of a 500 from inside the engine.
-- **Docker image**: the **repo-root `Dockerfile`** (moved there from `backend/Dockerfile` so
-  `gcloud run deploy --source .` finds it) builds from the **repo root** as build context — it
-  `COPY`s `road_designer/`, `samples/`, `backend/`, and the Notice Files (`LICENSE`, `NOTICE`,
-  `THIRD-PARTY-NOTICES.md`, required by the licence). Runs as non-root `appuser`, sets
-  `MPLCONFIGDIR=/tmp/matplotlib` (matplotlib needs a writable config dir). Listens on
-  `${PORT:-7860}`: Cloud Run injects `PORT` (8080) automatically, HF Spaces set none so it falls
-  back to 7860 (their convention) — the same image runs on both unchanged. `.dockerignore` +
-  `.gcloudignore` at the repo root keep the build context small (exclude `frontends/`, venvs,
-  `node_modules/`, outputs). Verified end-to-end with `docker build -t road-designer-api .` +
-  `docker run -p 18000:7860 ...`: `/health`, a real `POST /designs` against `samples/`, polling
-  to `done`, all 4 `/files/{kind}` downloads, and `/preview` all returned correctly from inside
-  the built image.
+- **Docker image**: the **repo-root `Dockerfile`** (moved there from `backend/Dockerfile` so it
+  can also be built via `gcloud run deploy --source .` if the backend is later promoted to Cloud
+  Run) builds from the **repo root** as build context — it `COPY`s `road_designer/`, `samples/`,
+  `backend/`, and the Notice Files (`LICENSE`, `NOTICE`, `THIRD-PARTY-NOTICES.md`, required by
+  the licence). Runs as non-root `appuser`, sets `MPLCONFIGDIR=/tmp/matplotlib` (matplotlib needs
+  a writable config dir). Listens on `${PORT:-7860}`: Hugging Face Docker Spaces set no `PORT`,
+  so it falls back to 7860 (HF's convention and current host); Cloud Run would inject `PORT`
+  (8080) automatically if promoted later — the same image runs on both unchanged.
+  `.dockerignore` (and `.gcloudignore`, relevant only for a future Cloud Run promotion) at the
+  repo root keep the build context small (exclude `frontends/`, venvs, `node_modules/`,
+  outputs). The image itself isn't pushed to the Hugging Face Space's own git repo directly —
+  see `DEPLOYMENT.md` Part A for why a small assembled subset (`road_designer/`, `samples/`,
+  `backend/`, Notice Files, `Dockerfile`) is pushed there instead of the whole monorepo. Verified
+  end-to-end with `docker build -t road-designer-api .` + `docker run -p 18000:7860 ...`:
+  `/health`, a real `POST /designs` against `samples/`, polling to `done`, all 4
+  `/files/{kind}` downloads, and `/preview` all returned correctly from inside the built image.
 - **`backend/__init__.py` is required**, not boilerplate: without it, pytest resolves
   `backend/tests/` as the top-level `tests` package (since `backend/` itself has no
   `__init__.py` to stop pytest's package-root walk), which collides with the repo-root
@@ -799,10 +810,13 @@ the independent variable, etc.) still applies untouched to any future engine wor
   to its plain-data fields (`type`/`loc`/`msg`) before raising. Watch for this same pattern
   (`exc.errors()` forwarded verbatim) in any future custom validator added to `schemas.py`.
 - **Keep-alive**: `.github/workflows/keep-alive-backend.yml` cron-pings the backend every ~12
-  minutes via the `BACKEND_HEALTH_URL` repo secret. It is for hosts where an idle instance is
-  free (HF PRO, Render, Koyeb). **Do not point it at the Cloud Run deployment** — with
-  `--no-cpu-throttling` a kept-warm instance is billed continuously and blows the free monthly
-  allotment. No-ops gracefully if the secret is unset.
+  minutes via the `BACKEND_HEALTH_URL` repo secret. **Recommended for the current HF Spaces
+  host**: `CPU Basic` hardware sleeps after a fixed, unconfigurable 48 h of inactivity, and
+  pinging it costs nothing extra (PRO is a flat monthly fee; `CPU Basic` hours are $0/hour
+  regardless of how continuously they're used). **Do not point it at a Cloud Run deployment**
+  if the backend is ever promoted there (§ 15 Part G) — with `--no-cpu-throttling` a kept-warm
+  instance is billed continuously and blows the free monthly allotment. No-ops gracefully if the
+  secret is unset.
 
 ### frontends/react/ — Vite + React + TypeScript + Tailwind
 
@@ -850,17 +864,18 @@ docker run --rm -v "//c/path/to/Road_designe/tests:/app/tests:ro" \
 
 | Where | Name | Set to |
 |---|---|---|
-| Cloud Run service (`gcloud run ... --set-env-vars`) / HF Space Variables | `ALLOWED_ORIGIN` | The SPA's origin — the custom domain `https://road-designer.beam-stack.com` (comma-add `https://road-designer.pages.dev` to keep the fallback) |
-| Cloudflare Pages dashboard | `VITE_API_BASE_URL` | The deployed backend URL (Cloud Run `https://…run.app`, or an HF Space `https://<user>-<space>.hf.space`) |
-| GitHub repo secret (optional) | `BACKEND_HEALTH_URL` | `https://<backend-host>/health` — only for HF/Render/Koyeb, **not** Cloud Run with `--no-cpu-throttling` |
-| Streamlit Cloud dashboard | "Main file path" setting | `frontends/streamlit/app.py` (must be updated manually post-move — cannot be set from the repo) |
+| HF Space Variables (Settings → Variables and secrets) | `ALLOWED_ORIGIN` | The SPA's origin — the custom domain `https://road-designer.beam-stack.com` (comma-add `https://road-designer.pages.dev` to keep the fallback) |
+| Cloudflare Pages dashboard | `VITE_API_BASE_URL` | The deployed backend URL — an HF Space `https://<user>-<space>.hf.space` (current), or a Cloud Run URL `https://…run.app` if later promoted (§ 15 Part G) |
+| GitHub repo secret (optional, recommended) | `BACKEND_HEALTH_URL` | `https://<space>.hf.space/health` — keeps the HF Space from sleeping, free to run there; **not** for a Cloud Run deployment with `--no-cpu-throttling` |
+| Streamlit Cloud dashboard | "Main file path" setting | `frontends/streamlit/app.py` (must be updated manually post-move — cannot be set from the repo; this is the fix if the Streamlit app currently doesn't load) |
 
 **[`DEPLOYMENT.md`](DEPLOYMENT.md)** (repo root) is the full step-by-step, beginner-oriented
-walkthrough — backend to **Google Cloud Run** (Part A, `gcloud run deploy --source .` from the
-repo root, `--no-cpu-throttling` for the background-thread jobs), React SPA to Cloudflare Pages
-(Part B), Streamlit path fix (Part D), and **Part G** for moving the backend to Hugging Face
-Spaces later (needs PRO since HF's 2025 pricing change; the `Dockerfile` is host-neutral so the
-image itself is unchanged). It also covers the licence obligations that touch deployment
-(Notice Files in the image, "Powered by Beamstack" on the two UIs) and the Cloud-Run-vs-HF-PRO
-cost crossover. Point the user there for the actual deploy; keep this section as the technical
-reference for what each piece does.
+walkthrough — backend to **Hugging Face Spaces** (Part A, from-scratch: PRO subscription,
+creating the Space, the assembled-subset `git push`, declaring the licence, testing), React SPA
+to Cloudflare Pages (Part B), Streamlit path fix (Part D), keeping the HF Space awake for free
+(Part E), and **Part G** for promoting the backend to Google Cloud Run later if usage ever
+outgrows HF PRO's flat cost (the `Dockerfile` is host-neutral so the image itself needs no
+change). It also covers the licence obligations that touch deployment (Notice Files in the
+image, "Powered by Beamstack" on the two UIs) and the HF-PRO-vs-Cloud-Run cost trade-off. Point
+the user there for the actual deploy; keep this section as the technical reference for what each
+piece does.

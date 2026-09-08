@@ -5,13 +5,18 @@ name: Keep-alive — FastAPI backend
 #
 # Setup: repo Settings -> Secrets and variables -> Actions -> New repository secret
 #   Name:  BACKEND_HEALTH_URL
-#   Value: https://<your-backend-host>/health
+#   Value: https://<your-space>.hf.space/health
 #
 # WHICH HOSTS THIS HELPS:
-#   - Hugging Face Spaces (PRO) / Render / Koyeb: yes — they sleep when idle and
-#     a cheap ping keeps them warm.
-#   - Google Cloud Run deployed with `--no-cpu-throttling` (this project's
-#     recommended setting): DO NOT set the secret. CPU-always-allocated means a
+#   - Hugging Face Spaces on `CPU Basic` (this project's current host, see
+#     DEPLOYMENT.md Part A/E): yes, recommended — CPU Basic sleeps after a fixed
+#     48h of inactivity with no way to configure that timeout, and pinging it
+#     costs nothing extra (PRO is a flat monthly fee; CPU Basic hours are
+#     $0/hour regardless of how continuously they're used). Render / Koyeb free
+#     tiers: same idea, also safe.
+#   - Google Cloud Run deployed with `--no-cpu-throttling` (DEPLOYMENT.md's
+#     documented later-promotion path, Part G, NOT the current host): DO NOT
+#     set the secret if/when running there. CPU-always-allocated means a
 #     kept-warm instance is billed continuously and would blow the free monthly
 #     allotment. Leave it to scale to zero and accept the first-request cold
 #     start instead.
@@ -30,8 +35,9 @@ jobs:
         run: |
           if [ -z "${{ secrets.BACKEND_HEALTH_URL }}" ]; then
             echo "BACKEND_HEALTH_URL secret is not set — skipping ping." \
-                 "Set it only for a host where keeping the service warm is free" \
-                 "(HF Spaces / Render / Koyeb), not for Cloud Run with" \
+                 "Recommended: set it to the current Hugging Face Space's" \
+                 "/health URL (DEPLOYMENT.md Part E) — free to run there." \
+                 "Do not point it at a Cloud Run deployment with" \
                  "--no-cpu-throttling. See the comment at the top of this file."
             exit 0
           fi

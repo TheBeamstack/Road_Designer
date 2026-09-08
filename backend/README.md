@@ -80,12 +80,15 @@ Hugging Face Spaces all work with no change).
 
 The full step-by-step is in the repo-root [`DEPLOYMENT.md`](../DEPLOYMENT.md). In short:
 
-- **Primary: Google Cloud Run** (Part A) — `gcloud run deploy road-designer-api --source .
-  --region <r> --allow-unauthenticated --memory 1Gi --no-cpu-throttling` from the repo root.
-  Free monthly compute allotment covers light/moderate use; scales to zero.
-- **Alternative: Hugging Face Spaces** (Part G) — now needs a **PRO** plan for CPU hardware.
-  SDK = Docker, Dockerfile at the Space repo root, port 7860 auto-selected.
-- **No-card alternatives:** Render / Koyeb free web services (512 MB, ~50 s cold start).
+- **Current: Hugging Face Spaces** (Part A) — needs a **PRO** plan ($9/mo flat) to create a
+  Docker Space at all; the `CPU Basic` hardware it then runs on is $0/hour. SDK = Docker,
+  `Dockerfile` at the Space repo's own root (a small assembled subset of this repo is pushed
+  there — see Part A.4–A.5), port 7860 auto-selected. Sleeps after 48 h idle on `CPU Basic`
+  (unconfigurable) — Part E covers a free keep-alive ping.
+- **Later-promotion path: Google Cloud Run** (Part G) — `gcloud run deploy road-designer-api
+  --source . --region <r> --allow-unauthenticated --memory 1Gi --no-cpu-throttling` from the
+  repo root. Free monthly compute allotment covers light/moderate use; scales to zero. Worth
+  reconsidering if sustained traffic makes HF PRO's flat cost no longer the cheaper option.
 
 The Dockerfile is host-neutral, so switching hosts later is: build the same image there,
 repoint `VITE_API_BASE_URL` on Cloudflare Pages, re-set `ALLOWED_ORIGIN`.
@@ -94,9 +97,9 @@ repoint `VITE_API_BASE_URL` on Cloudflare Pages, re-set `ALLOWED_ORIGIN`.
 
 | Where | Name | Set to |
 |---|---|---|
-| Backend host (Cloud Run: `--set-env-vars`; HF: Space Variables) | `ALLOWED_ORIGIN` | The deployed Cloudflare Pages origin, e.g. `https://road-designer.pages.dev` |
+| Backend host (HF: Space Variables; Cloud Run if promoted later: `--set-env-vars`) | `ALLOWED_ORIGIN` | The deployed Cloudflare Pages origin, e.g. `https://road-designer.pages.dev` |
 | Cloudflare Pages dashboard | `VITE_API_BASE_URL` | The backend's public URL, no trailing slash (see `frontends/react/README.md`) |
-| GitHub repo secret (optional) | `BACKEND_HEALTH_URL` | `https://<backend-host>/health` — used by `.github/workflows/keep-alive-backend.yml`. Set it only for hosts where staying warm is free (HF / Render / Koyeb); **not** for Cloud Run with `--no-cpu-throttling`. |
+| GitHub repo secret (optional, recommended) | `BACKEND_HEALTH_URL` | `https://<space>.hf.space/health` — used by `.github/workflows/keep-alive-backend.yml` to stop the current HF Space from sleeping; free to run there. **Not** for a Cloud Run deployment with `--no-cpu-throttling`. |
 
 ## Directory layout
 
