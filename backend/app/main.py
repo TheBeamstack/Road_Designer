@@ -21,7 +21,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from . import jobs
-from .routers import designs, health, preview
+from .routers import designs, health, preview, samples
 
 # TODO(user): after your first real Cloudflare Pages deploy, set this env var
 # on the backend service (HF Space: Settings > Variables and secrets; Cloud Run
@@ -57,3 +57,4 @@ app.add_middleware(
 app.include_router(health.router)
 app.include_router(designs.router)
 app.include_router(preview.router)
+app.include_router(samples.router)

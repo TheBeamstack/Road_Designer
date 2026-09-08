@@ -105,6 +105,18 @@ def test_unknown_file_kind_404s(client, done_job):
     assert client.get(f"/designs/{done_job}/files/nope").status_code == 404
 
 
+def test_sample_axe_matches_bundled_file(client, axe_path):
+    resp = client.get("/samples/axe")
+    assert resp.status_code == 200
+    assert resp.content == axe_path.read_bytes()
+
+
+def test_sample_terrain_matches_bundled_file(client, terrain_path):
+    resp = client.get("/samples/terrain")
+    assert resp.status_code == 200
+    assert resp.content == terrain_path.read_bytes()
+
+
 def test_preview_payload_shape(client, done_job):
     resp = client.get(f"/designs/{done_job}/preview")
     assert resp.status_code == 200
