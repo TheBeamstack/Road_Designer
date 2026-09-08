@@ -7,5 +7,5 @@
 }
 
 body {
-  @apply bg-white text-ink antialiased;
+  @apply bg-panel text-ink antialiased;
 }

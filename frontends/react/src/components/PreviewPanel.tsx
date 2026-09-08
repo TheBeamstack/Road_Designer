@@ -46,7 +46,7 @@ export function PreviewPanel({ jobId }: { jobId: string | null }) {
 
   const profileSeries: ChartSeries[] = [
     { name: "TN", color: "#2f9e44", points: data.profile.pk.map((pk, i) => [pk, data.profile.tn[i]] as [number, number]) },
-    { name: "Projet", color: "#d92727", points: data.profile.pk.map((pk, i) => [pk, data.profile.projet[i]] as [number, number]) },
+    { name: "Projet", color: "#B23A26", points: data.profile.pk.map((pk, i) => [pk, data.profile.projet[i]] as [number, number]) },
   ];
   const bruckerSeries: ChartSeries[] = [
     {
@@ -57,7 +57,7 @@ export function PreviewPanel({ jobId }: { jobId: string | null }) {
     },
   ];
   const planSeries: ChartSeries[] = [
-    { name: "Axe", color: "#202a3a", points: data.plan.axis as [number, number][] },
+    { name: "Axe", color: "#1E2430", points: data.plan.axis as [number, number][] },
     { name: "Bord gauche", color: "#8f9bb3", points: data.plan.edges_left as [number, number][] },
     { name: "Bord droit", color: "#8f9bb3", points: data.plan.edges_right as [number, number][] },
   ];

@@ -182,7 +182,7 @@ export function InteractiveLineChart({
           {xTicks.map((t) => (
             <g key={`x${t}`}>
               <line x1={xScale(t)} y1={HEIGHT - MARGIN.bottom} x2={xScale(t)} y2={HEIGHT - MARGIN.bottom + 4} stroke="#20293a55" />
-              <text x={xScale(t)} y={HEIGHT - MARGIN.bottom + 16} fontSize={9} textAnchor="middle" fill="#697386">
+              <text x={xScale(t)} y={HEIGHT - MARGIN.bottom + 16} fontSize={9} textAnchor="middle" fill="#5B6472">
                 {valueFormatter(t)}
               </text>
             </g>
@@ -190,13 +190,13 @@ export function InteractiveLineChart({
           {yTicks.map((t) => (
             <g key={`y${t}`}>
               <line x1={MARGIN.left - 4} y1={yScale(t)} x2={MARGIN.left} y2={yScale(t)} stroke="#20293a55" />
-              <text x={MARGIN.left - 8} y={yScale(t) + 3} fontSize={9} textAnchor="end" fill="#697386">
+              <text x={MARGIN.left - 8} y={yScale(t) + 3} fontSize={9} textAnchor="end" fill="#5B6472">
                 {valueFormatter(t)}
               </text>
             </g>
           ))}
 
-          <text x={(WIDTH + MARGIN.left - MARGIN.right) / 2} y={HEIGHT - 4} fontSize={10} textAnchor="middle" fill="#202a3a">
+          <text x={(WIDTH + MARGIN.left - MARGIN.right) / 2} y={HEIGHT - 4} fontSize={10} textAnchor="middle" fill="#1E2430">
             {xLabel}
           </text>
           <text
@@ -204,7 +204,7 @@ export function InteractiveLineChart({
             y={(HEIGHT - MARGIN.bottom + MARGIN.top) / 2}
             fontSize={10}
             textAnchor="middle"
-            fill="#202a3a"
+            fill="#1E2430"
             transform={`rotate(-90 12 ${(HEIGHT - MARGIN.bottom + MARGIN.top) / 2})`}
           >
             {yLabel}

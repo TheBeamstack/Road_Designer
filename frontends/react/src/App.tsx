@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { Header } from "@/components/Header";
-import { MissionBand } from "@/components/MissionBand";
 import { ContactFooter } from "@/components/ContactFooter";
 import { SiteFooter } from "@/components/SiteFooter";
 import { DesignForm, type DesignFormSubmitPayload } from "@/components/DesignForm";
@@ -28,9 +27,8 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-panel">
       <Header />
-      <MissionBand />
 
       <main className="mx-auto mt-6 max-w-6xl px-6 pb-10">
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]">

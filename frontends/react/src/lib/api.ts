@@ -68,3 +68,18 @@ export function fileDownloadUrl(relativeUrl: string): string {
   // Backend returns paths like "/designs/{id}/files/dxf".
   return `${API_BASE_URL}${relativeUrl}`;
 }
+
+// Fetches the same bundled example bytes the Streamlit app reads straight
+// off disk (road_designer.samples_api), wrapped as a File so the "Exemple
+// bundle" option can reuse the exact same upload code path as a real
+// user-picked file — no separate submission branch needed.
+export async function fetchSampleFile(kind: "axe" | "terrain"): Promise<File> {
+  const res = await fetch(`${API_BASE_URL}/samples/${kind}`);
+  if (!res.ok) {
+    throw new ApiError(res.status, await parseErrorBody(res));
+  }
+  const blob = await res.blob();
+  return kind === "axe"
+    ? new File([blob], "sample_axe.txt", { type: "text/plain" })
+    : new File([blob], "sample_terrain.csv", { type: "text/csv" });
+}

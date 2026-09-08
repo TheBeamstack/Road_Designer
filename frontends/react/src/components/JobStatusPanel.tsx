@@ -11,18 +11,42 @@ const STATUS_META: Record<JobStatus["status"], { label: string; dot: string }> =
 };
 
 const DOWNLOADS: { kind: keyof NonNullable<JobStatus["files"]>; label: string; filename: string }[] = [
-  { kind: "dxf", label: "⬇️ DXF", filename: "road_design.dxf" },
-  { kind: "xlsx", label: "⬇️ XLSX", filename: "tableau_profil_en_long.xlsx" },
-  { kind: "pdf_plan", label: "⬇️ PDF Plan", filename: "plan_par_sections.pdf" },
-  { kind: "pdf_pt", label: "⬇️ PDF Profils en travers", filename: "profils_en_travers.pdf" },
+  { kind: "dxf", label: "DXF", filename: "road_design.dxf" },
+  { kind: "xlsx", label: "XLSX", filename: "tableau_profil_en_long.xlsx" },
+  { kind: "pdf_plan", label: "PDF Plan", filename: "plan_par_sections.pdf" },
+  { kind: "pdf_pt", label: "PDF Profils en travers", filename: "profils_en_travers.pdf" },
 ];
+
+function DownloadIcon() {
+  return (
+    <svg viewBox="0 0 16 16" className="h-3.5 w-3.5" fill="none" aria-hidden>
+      <path d="M8 2v8m0 0-3-3m3 3 3-3" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M2.5 12.5v1a1 1 0 0 0 1 1h9a1 1 0 0 0 1-1v-1" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+function EmptyStateIcon() {
+  return (
+    <svg viewBox="0 0 48 48" className="h-10 w-10 text-navy/15" fill="none" aria-hidden>
+      <rect x="8" y="6" width="28" height="36" rx="2" stroke="currentColor" strokeWidth="2" />
+      <path d="M14 16h16M14 23h16M14 30h10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+      <circle cx="34" cy="34" r="9" fill="white" stroke="currentColor" strokeWidth="2" />
+      <path d="M34 30v8m-4-4h8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+    </svg>
+  );
+}
 
 export function JobStatusPanel({ job }: { job: JobStatus | null }) {
   if (!job) {
     return (
       <Card>
-        <CardContent className="text-sm text-muted">
-          Renseignez le formulaire puis cliquez sur « Générer » pour lancer un calcul.
+        <CardContent className="flex flex-col items-center gap-3 py-10 text-center">
+          <EmptyStateIcon />
+          <p className="max-w-xs text-sm text-muted">
+            Renseignez le formulaire puis cliquez sur « Générer » pour lancer un calcul — le
+            statut du job et les téléchargements apparaîtront ici.
+          </p>
         </CardContent>
       </Card>
     );
@@ -45,7 +69,8 @@ export function JobStatusPanel({ job }: { job: JobStatus | null }) {
           <div className="grid grid-cols-2 gap-2">
             {DOWNLOADS.map((d) => (
               <a key={d.kind} href={fileDownloadUrl(job.files![d.kind])} download={d.filename}>
-                <Button type="button" variant="outline" className="w-full">
+                <Button type="button" variant="outline" className="w-full gap-1.5">
+                  <DownloadIcon />
                   {d.label}
                 </Button>
               </a>
