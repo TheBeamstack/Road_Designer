@@ -87,9 +87,27 @@ export function PreviewPanel({ jobId }: { jobId: string | null }) {
           ))}
         </div>
       </CardHeader>
-      <CardContent>
+      <CardContent className="flex flex-col gap-3">
+        <div className="flex items-start gap-2 rounded-md border border-signal/20 bg-signal/5 px-3 py-2 text-xs text-navy">
+          <svg viewBox="0 0 16 16" className="mt-0.5 h-3.5 w-3.5 flex-none text-signal" fill="none" aria-hidden>
+            <circle cx="8" cy="8" r="6.5" stroke="currentColor" strokeWidth="1.3" />
+            <path d="M8 7.2v4M8 5.2v.01" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
+          </svg>
+          <p>
+            <span className="font-semibold">Aperçu simplifié</span> — utile pour une vérification
+            rapide, mais non coté et non à l'échelle. Pour les documents définitifs, référez-vous
+            aux fichiers <span className="font-semibold">DXF</span> et{" "}
+            <span className="font-semibold">PDF</span> téléchargés.
+          </p>
+        </div>
+
         {tab === "profile" && (
-          <InteractiveLineChart series={profileSeries} xLabel="PK (m)" yLabel="Cote (m)" />
+          <InteractiveLineChart
+            series={profileSeries}
+            xLabel="PK (m)"
+            yLabel="Cote (m)"
+            yScaleFactor={2}
+          />
         )}
         {tab === "bruckner" && (
           <InteractiveLineChart series={bruckerSeries} xLabel="PK (m)" yLabel="M(PK) [m³]" />

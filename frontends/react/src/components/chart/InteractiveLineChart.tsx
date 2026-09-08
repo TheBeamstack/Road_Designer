@@ -18,7 +18,11 @@ const MARGIN = { top: 12, right: 16, bottom: 34, left: 58 };
 const WIDTH = 720;
 const HEIGHT = 320;
 
-function computeExtentDomain(series: ChartSeries[], aspectLock: boolean): Domain {
+function computeExtentDomain(
+  series: ChartSeries[],
+  aspectLock: boolean,
+  yScaleFactor: number
+): Domain {
   let xMin = Infinity, xMax = -Infinity, yMin = Infinity, yMax = -Infinity;
   for (const s of series) {
     for (const [x, y] of s.points) {
@@ -33,6 +37,16 @@ function computeExtentDomain(series: ChartSeries[], aspectLock: boolean): Domain
   const padX = (xMax - xMin) * 0.05 || 1;
   const padY = (yMax - yMin) * 0.12 || 1;
   xMin -= padX; xMax += padX; yMin -= padY; yMax += padY;
+
+  // Widen the Y domain around its centre so the same data occupies fewer
+  // vertical pixels — i.e. divides the effective vertical exaggeration by
+  // this factor. 1 = unchanged; 2 = half the vertical scale.
+  if (yScaleFactor !== 1) {
+    const cy = (yMin + yMax) / 2;
+    const halfRange = ((yMax - yMin) / 2) * yScaleFactor;
+    yMin = cy - halfRange;
+    yMax = cy + halfRange;
+  }
 
   if (aspectLock) {
     const innerW = WIDTH - MARGIN.left - MARGIN.right;
@@ -62,15 +76,23 @@ export function InteractiveLineChart({
   xLabel,
   yLabel,
   aspectLock = false,
+  yScaleFactor = 1,
   valueFormatter = (v: number) => v.toFixed(2),
 }: {
   series: ChartSeries[];
   xLabel: string;
   yLabel: string;
   aspectLock?: boolean;
+  /** Widens the Y domain by this factor (1 = auto-fit, 2 = half the vertical
+   * exaggeration) — for charts like "Profil en long" where the raw auto-fit
+   * makes the terrain look taller/spikier than the PK range warrants. */
+  yScaleFactor?: number;
   valueFormatter?: (v: number) => string;
 }) {
-  const baseDomain = useMemo(() => computeExtentDomain(series, aspectLock), [series, aspectLock]);
+  const baseDomain = useMemo(
+    () => computeExtentDomain(series, aspectLock, yScaleFactor),
+    [series, aspectLock, yScaleFactor]
+  );
   const [domain, setDomain] = useState<Domain>(baseDomain);
   useEffect(() => setDomain(baseDomain), [baseDomain]);
 
