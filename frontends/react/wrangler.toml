@@ -2,7 +2,7 @@
 # See ./README.md for the full deploy walkthrough (dashboard Git-integration
 # path, which most users will want instead of the wrangler CLI).
 
-name = "road-designer-react"
+name = "road-designer"
 pages_build_output_dir = "dist"
 compatibility_date = "2024-11-01"
 
