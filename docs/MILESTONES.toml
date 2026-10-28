@@ -1,0 +1,66 @@
+# docs/MILESTONES.toml — Road_Designer's releases and milestones (grammar: diwan docs/MILESTONES-TEMPLATE.toml).
+# Proposed 2026-10-28 by the steward. Nothing here is approved: the owner writes the date in `approved`.
+# `covers` is empty: Road_Designer has no backlog, so no T- row exists to cover. The `roaddesigner` key is not yet a
+# lane in diwan docs/lanes.toml, so `owner_files.py check --lane Road_Designer` cannot accept this file until it is one.
+
+[[release]]
+id = "R-roaddesigner-01"
+# portfolio: beamstack, because BCL-1.1 forbids selling it (LICENSING.md); it is a free tool that shows off the Beamstack brand, not an app that earns revenue.
+portfolio = "beamstack"
+# Source: AGENTS.md § 14 Version ("Road-Designer V 1.0 — first integrated release") and § 15 (three surfaces, URLs "TODO(user)").
+goal = "Road Designer V 1.0 is tagged and all three surfaces are confirmed live at recorded URLs."
+done_when = ["tag:Road_Designer@v1.0.0"]
+covers = ["M-roaddesigner-01"]
+due = "2026-11-27"
+approved = ""
+
+[[milestone]]
+id = "M-roaddesigner-01"
+release = "R-roaddesigner-01"
+# portfolio: beamstack, for the same reason as its release.
+portfolio = "beamstack"
+# Source: DEPLOYMENT.md § 8 Part F (final end-to-end check), Part C (lock down CORS), Part D (fix the Streamlit path);
+# AGENTS.md § 15 "Env vars / secrets to fill in after first real deploy".
+goal = "A BET engineer can open road-designer.beam-stack.com or the Streamlit app, load the example and download the DXF, XLSX and two PDFs."
+done_when = ["owner:DEPLOYMENT.md Part F passes on road-designer.beam-stack.com and the Streamlit URL, and AGENTS.md § 15 lists all three URLs"]
+covers = []
+due = "2026-11-27"
+size = 3
+approved = ""
+
+[[release]]
+id = "R-roaddesigner-02"
+# portfolio: beamstack, for the same reason as R-roaddesigner-01.
+portfolio = "beamstack"
+# Source: AGENTS.md § 13 "Open for V 1.x: clothoïdes, calcul dévers, vérification SSD, import LandXML, multi-tracé".
+goal = "Road Designer V 1.1 designs a REFT-complete alignment: clothoid transitions, superelevation and a sight-distance check."
+done_when = ["tag:Road_Designer@v1.1.0"]
+covers = ["M-roaddesigner-02", "M-roaddesigner-03"]
+due = "2027-02-26"
+approved = ""
+
+[[milestone]]
+id = "M-roaddesigner-02"
+release = "R-roaddesigner-02"
+# portfolio: beamstack, for the same reason as its release.
+portfolio = "beamstack"
+# Source: AGENTS.md § 13 "Open for V 1.x" (clothoïdes, calcul dévers).
+goal = "An axe file with clothoid transitions is read and drawn, and each cross-section carries the computed superelevation (dévers)."
+done_when = ["owner:the bundled example with a clothoid produces a DXF and PDFs showing the transitions and the dévers"]
+covers = []
+due = "2027-01-22"
+size = 6
+approved = ""
+
+[[milestone]]
+id = "M-roaddesigner-03"
+release = "R-roaddesigner-02"
+# portfolio: beamstack, for the same reason as its release.
+portfolio = "beamstack"
+# Source: AGENTS.md § 13 "Open for V 1.x" (vérification SSD, import LandXML).
+goal = "The designer imports a LandXML alignment and is warned wherever the stopping sight distance is below the REFT minimum."
+done_when = ["owner:a LandXML alignment imports and the SSD check flags a deliberately short sight distance"]
+covers = []
+due = "2027-02-26"
+size = 5
+approved = ""
