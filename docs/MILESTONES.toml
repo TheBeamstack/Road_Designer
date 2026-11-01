@@ -1,66 +1,267 @@
-# docs/MILESTONES.toml — Road_Designer's releases and milestones (grammar: diwan docs/MILESTONES-TEMPLATE.toml).
-# Proposed 2026-10-28 by the steward. Nothing here is approved: the owner writes the date in `approved`.
-# `covers` is empty: Road_Designer has no backlog, so no T- row exists to cover. The `roaddesigner` key is not yet a
-# lane in diwan docs/lanes.toml, so `owner_files.py check --lane Road_Designer` cannot accept this file until it is one.
+# docs/MILESTONES.toml — this lane's releases and milestones: what it builds towards, and by when.
+#
+# ════════════════════════════════════════════════════════════════════════════════════════════════
+#  HOW TO EDIT THIS FILE
+# ════════════════════════════════════════════════════════════════════════════════════════════════
+#
+# The steward copies this file from diwan `docs/MILESTONES-TEMPLATE.toml` to `.agent.toml [paths]
+# milestones` (default `docs/MILESTONES.toml`, beside the decisions file) and proposes releases and milestones
+# in it. The owner approves one by writing the day's date in its `approved` line, on GitHub (pencil icon →
+# "Commit directly to the main branch"). Once a day diwan copies every approved block into its
+# `docs/owner/ROADMAP.toml`, where the owner weighs each release, and the lane (its share of the accounts).
+# Check this file on the lane's checkout with:   python3 $DIWAN/scripts/owner_files.py check --lane <repo>
+#
+# Who writes what: the steward appends a block with `approved = ""` (at most 2 releases and 3 milestones
+# open at once) and edits
+# only such blocks; the owner may edit any field, and alone writes `approved` and `dropped`. A change to
+# an approved block is not copied until the owner writes a new date in its `approved` line (`dropped`
+# excepted): until then ROADMAP keeps the approved copy and the digest says what changed, once.
+#
+# Two levels. A [[milestone]] is a set of tasks; a [[release]] (e.g. "v1.0 production-ready") is a set of
+# milestones. The lane's ACTIVE milestone is the first approved milestone, top to bottom, not dropped or done,
+# of its release the owner weighs highest in ROADMAP.toml (all equal: the first release in this file; a milestone
+# with no release, after the releases); its steward builds from it first. To change the sequence, move the blocks.
+#
+# A [[release]] has the milestone fields below but `size`; its `covers` lists its milestones, "M-<lane>-NN",
+# and each of them names it in a `release` line. Its id is "R-<lane>-NN"; it is done when they all are and
+# its `done_when` checks pass.
+#
+#   id         "M-<lane>-NN": the lane's name in diwan docs/lanes.toml and the next two-digit number; never reuse one.
+#   release    optional: the id of the release it belongs to; without one it is reported under "no release".
+#   portfolio  "beamstack" or "revenue" (the apps that fund Beamstack): which folder of the
+#              progress record it is reported in.
+#   goal       one line: the result, not a task list.
+#   done_when  extra checks beyond "every covered task is done"; [] = none. Each is one of:
+#                "task:<repo>#T-nnn"   that task's row is done on main
+#                "epic:X-nnn"          every child of that CROSS.md epic is done
+#                "tag:<repo>@<name>"   that tag exists
+#                "file:<repo>:<path>"  that file exists on main
+#                "owner:<sentence>"    the owner confirms it when everything else is done
+#   covers     the tasks it is made of: "T-nnn" (this lane), "<repo>#T-nnn" or "X-nnn". The steward
+#              may add more later by tagging a task with the milestone; the report shows it.
+#   due        "YYYY-MM-DD", the target date; later than the day it was approved.
+#   size       how many tasks it should take, 1 to 50; the progress % never counts fewer.
+#   approved   "" while proposed; the owner's "YYYY-MM-DD" once approved.
+#   dropped    optional, owner only; a reason, e.g. "superseded by M-bunyan-03". A dropped one is never active.
+#
+# ── EXAMPLES ─────────────────────────────────────────────────────────────────────────────────────
+#
+# Propose a release and its milestone (steward) — paste the blocks at the end of the file and fill them in:
+#
+#     [[release]]
+#     id = "R-bunyan-01"
+#     portfolio = "beamstack"
+#     goal = "v1.0 production-ready"
+#     done_when = ["tag:Bunyan@v1.0.0"]
+#     covers = ["M-bunyan-01"]
+#     due = "2026-12-20"
+#     approved = ""
+#
+#     [[milestone]]
+#     id = "M-bunyan-01"
+#     release = "R-bunyan-01"
+#     portfolio = "beamstack"
+#     goal = "the D29 cache ships in a release candidate"
+#     done_when = ["tag:Bunyan@v1.0.0-rc1"]
+#     covers = ["T-038", "T-039", "T-040", "T-041", "T-042", "T-043", "T-044", "T-045"]
+#     due = "2026-11-30"
+#     size = 8
+#     approved = ""
+#
+# Approve it (owner) — write today's date:
+#
+#     approved = "2026-10-23"
+#
+# Move a date (owner) — change `due`, and write today's date in `approved` so the change is copied:
+#
+#     due = "2026-12-15"
+#     approved = "2026-11-02"
+#
+# Drop it (owner) — add a `dropped` line with the reason; the next block becomes active:
+#
+#     dropped = "replaced by the native renderer"
+#
+# ── COMMON MISTAKES (each one is refused, with the line number) ─────────────────────────────────
+#
+#   id = "M-bunyan-1" or "bunyan-01" → "M-<lane>-NN" with this lane's name and two digits.
+#   the same id twice                → each milestone has its own id.
+#   lane = "bunyan" or weight = 4    → not here: the lane is this repo's, the weight is in diwan's ROADMAP.toml.
+#   portfolio = "Beamstack"          → "beamstack" or "revenue", lower case.
+#   done_when = ["tests pass"]       → only the five kinds of check above.
+#   covers = "T-041"                 → a list in brackets, even for one: ["T-041"].
+#   covers = [41]                    → each task in quotes, with its T-: "T-041".
+#   due = "30/11/2026"               → "YYYY-MM-DD".
+#   approved = "yes"                 → "" or "YYYY-MM-DD".
+#   due on or before `approved`      → a target date is later than its approval.
+#   size = 0                         → a whole number 1 to 50.
+#   a 4th block with approved = ""   → at most 3 milestone proposals open at once, and 2 release ones.
+#   covers = ["M-bunyan-01"] without release = "R-bunyan-01" in M-bunyan-01 → each names the other, or neither.
+#   a block without its [[milestone]] line → each block starts with [[milestone]].
+#
+# ════════════════════════════════════════════════════════════════════════════════════════════════
 
 [[release]]
 id = "R-roaddesigner-01"
-# portfolio: beamstack, because BCL-1.1 forbids selling it (LICENSING.md); it is a free tool that shows off the Beamstack brand, not an app that earns revenue.
 portfolio = "beamstack"
-# Source: AGENTS.md § 14 Version ("Road-Designer V 1.0 — first integrated release") and § 15 (three surfaces, URLs "TODO(user)").
-goal = "Road Designer V 1.0 is tagged and all three surfaces are confirmed live at recorded URLs."
+goal = "V1.0.0: live at rd.beam-stack.com, locked, tested, fast, and never looks stuck"
 done_when = ["tag:Road_Designer@v1.0.0"]
-covers = ["M-roaddesigner-01"]
+covers = ["M-roaddesigner-01", "M-roaddesigner-02"]
 due = "2026-11-27"
-approved = ""
+approved = "2026-11-01"
 
 [[milestone]]
 id = "M-roaddesigner-01"
 release = "R-roaddesigner-01"
-# portfolio: beamstack, for the same reason as its release.
 portfolio = "beamstack"
-# Source: DEPLOYMENT.md § 8 Part F (final end-to-end check), Part C (lock down CORS), Part D (fix the Streamlit path);
-# AGENTS.md § 15 "Env vars / secrets to fill in after first real deploy".
-goal = "A BET engineer can open road-designer.beam-stack.com or the Streamlit app, load the example and download the DXF, XLSX and two PDFs."
-done_when = ["owner:DEPLOYMENT.md Part F passes on road-designer.beam-stack.com and the Streamlit URL, and AGENTS.md § 15 lists all three URLs"]
+goal = "Ship-ready: CI runs the tests and the build, every doc names rd.beam-stack.com, CORS is locked, Streamlit is frozen"
+done_when = ["file:Road_Designer:.github/workflows/ci.yml", "owner:ALLOWED_ORIGIN on the HF Space is https://rd.beam-stack.com and another origin gets no CORS header", "owner:the CI check is required on main", "owner:DEPLOYMENT.md Part F passes on rd.beam-stack.com"]
 covers = []
-due = "2026-11-27"
-size = 3
-approved = ""
-
-[[release]]
-id = "R-roaddesigner-02"
-# portfolio: beamstack, for the same reason as R-roaddesigner-01.
-portfolio = "beamstack"
-# Source: AGENTS.md § 13 "Open for V 1.x: clothoïdes, calcul dévers, vérification SSD, import LandXML, multi-tracé".
-goal = "Road Designer V 1.1 designs a REFT-complete alignment: clothoid transitions, superelevation and a sight-distance check."
-done_when = ["tag:Road_Designer@v1.1.0"]
-covers = ["M-roaddesigner-02", "M-roaddesigner-03"]
-due = "2027-02-26"
-approved = ""
+due = "2026-11-13"
+size = 5
+approved = "2026-11-01"
 
 [[milestone]]
 id = "M-roaddesigner-02"
-release = "R-roaddesigner-02"
-# portfolio: beamstack, for the same reason as its release.
+release = "R-roaddesigner-01"
 portfolio = "beamstack"
-# Source: AGENTS.md § 13 "Open for V 1.x" (clothoïdes, calcul dévers).
-goal = "An axe file with clothoid transitions is read and drawn, and each cross-section carries the computed superelevation (dévers)."
-done_when = ["owner:the bundled example with a clothoid produces a DXF and PDFs showing the transitions and the dévers"]
+goal = "Generation is faster and shows its progress stage by stage, and a timer on box 1 replaces the GitHub keep-alive workflow, pinging /health at a random 20 min to 2 h each time"
+done_when = ["owner:on rd.beam-stack.com the sample shows each stage with a page counter and finishes faster than before", "owner:a timer on box 1 pings the backend's /health at a new random 20-120 min each time, and the GitHub keep-alive workflow is removed from Road_Designer"]
 covers = []
-due = "2027-01-22"
+due = "2026-11-27"
 size = 6
-approved = ""
+approved = "2026-11-01"
+
+[[release]]
+id = "R-roaddesigner-02"
+portfolio = "beamstack"
+goal = "V1.0.1: the interface speaks English, and repeat users are asked to join the Beamstack newsletter"
+done_when = ["tag:Road_Designer@v1.0.1"]
+covers = ["M-roaddesigner-03"]
+due = "2026-12-23"
+approved = "2026-11-01"
 
 [[milestone]]
 id = "M-roaddesigner-03"
 release = "R-roaddesigner-02"
-# portfolio: beamstack, for the same reason as its release.
 portfolio = "beamstack"
-# Source: AGENTS.md § 13 "Open for V 1.x" (vérification SSD, import LandXML).
-goal = "The designer imports a LandXML alignment and is warned wherever the stopping sight distance is below the REFT minimum."
-done_when = ["owner:a LandXML alignment imports and the SSD check flags a deliberately short sight distance"]
+goal = "English UI (drawings stay French), an anonymous run count, a privacy notice, and behind a cookie-consent banner a FR/EN ask on a repeat visitor's second generation that opens beam-stack.com's own signup page"
+done_when = ["owner:the owner approves the FR/EN wording of the consent banner, the privacy notice and the newsletter ask", "owner:on rd.beam-stack.com the cookie-consent banner shows first, and after consent a second generation on a later visit shows the ask before download", "owner:the ask's subscribe button opens beam-stack.com's own signup page in a new tab, and both buttons always download", "owner:rd.beam-stack.com shows its own privacy notice"]
 covers = []
-due = "2027-02-26"
-size = 5
-approved = ""
+due = "2026-12-23"
+size = 9
+approved = "2026-11-01"
+
+[[release]]
+id = "R-roaddesigner-03"
+portfolio = "beamstack"
+goal = "V1.1.0: REFT-complete geometry — plan radii checked, clothoids computed, dévers, SSD, LandXML import"
+done_when = ["tag:Road_Designer@v1.1.0"]
+covers = ["M-roaddesigner-04", "M-roaddesigner-05", "M-roaddesigner-06"]
+due = "2027-03-05"
+approved = "2026-11-01"
+
+[[milestone]]
+id = "M-roaddesigner-04"
+release = "R-roaddesigner-03"
+portfolio = "beamstack"
+goal = "Every REFT figure cites its edition, plan radii are checked per category, and custom values are flagged on every output"
+done_when = ["owner:the cited REFT edition and each value are confirmed by the owner or a named engineer"]
+covers = []
+due = "2027-01-22"
+size = 6
+approved = "2026-11-01"
+
+[[milestone]]
+id = "M-roaddesigner-05"
+release = "R-roaddesigner-03"
+portfolio = "beamstack"
+goal = "Clothoids are read from the axe file or computed from REFT, and dévers is given per section with a diagram"
+done_when = ["owner:the before/after PDFs of a sample with a clothoid show the transitions, the dévers values and the diagram"]
+covers = []
+due = "2027-02-12"
+size = 8
+approved = "2026-11-01"
+
+[[milestone]]
+id = "M-roaddesigner-06"
+release = "R-roaddesigner-03"
+portfolio = "beamstack"
+goal = "A LandXML alignment imports, and every stopping-sight-distance shortfall is listed with its PK"
+done_when = ["owner:a LandXML alignment imports and a deliberately short sight distance is flagged"]
+covers = []
+due = "2027-03-05"
+size = 6
+approved = "2026-11-01"
+
+[[release]]
+id = "R-roaddesigner-04"
+portfolio = "beamstack"
+goal = "V1.2.0: French presets, pavement design and an IFC model"
+done_when = ["tag:Road_Designer@v1.2.0"]
+covers = ["M-roaddesigner-07", "M-roaddesigner-08", "M-roaddesigner-09"]
+due = "2027-05-14"
+approved = "2026-11-01"
+
+[[milestone]]
+id = "M-roaddesigner-07"
+release = "R-roaddesigner-04"
+portfolio = "beamstack"
+goal = "ICTAAL and ARP presets, each value citing its edition, beside the REFT ones"
+done_when = ["owner:the cited ICTAAL and ARP editions and each value are confirmed by the owner or a named engineer"]
+covers = []
+due = "2027-03-19"
+size = 4
+approved = "2026-11-01"
+
+[[milestone]]
+id = "M-roaddesigner-08"
+release = "R-roaddesigner-04"
+portfolio = "beamstack"
+goal = "Pavement design (dimensionnement de chaussée) from traffic and soil class, per the cited catalogue"
+done_when = ["owner:one pavement structure is checked by hand against the cited catalogue"]
+covers = []
+due = "2027-04-16"
+size = 8
+approved = "2026-11-01"
+
+[[milestone]]
+id = "M-roaddesigner-09"
+release = "R-roaddesigner-04"
+portfolio = "beamstack"
+goal = "An IFC 4.3 file with the alignment and the road surface opens in a free IFC viewer"
+done_when = ["owner:the sample's IFC file opens in a free IFC viewer"]
+covers = []
+due = "2027-05-14"
+size = 8
+approved = "2026-11-01"
+
+[[release]]
+id = "R-roaddesigner-05"
+portfolio = "beamstack"
+goal = "V1.3.0: culverts and multi-tracé comparison"
+done_when = ["tag:Road_Designer@v1.3.0"]
+covers = ["M-roaddesigner-10", "M-roaddesigner-11"]
+due = "2027-07-09"
+approved = "2026-11-01"
+
+[[milestone]]
+id = "M-roaddesigner-10"
+release = "R-roaddesigner-05"
+portfolio = "beamstack"
+goal = "Culverts (buses, dalots) placed on the profile and sized per the cited method"
+done_when = ["owner:one culvert is checked by hand against the cited method"]
+covers = []
+due = "2027-06-11"
+size = 8
+approved = "2026-11-01"
+
+[[milestone]]
+id = "M-roaddesigner-11"
+release = "R-roaddesigner-05"
+portfolio = "beamstack"
+goal = "Several alignment variants are designed side by side and compared on length, earthworks and REFT warnings"
+done_when = ["owner:two variants of the sample are compared in one table"]
+covers = []
+due = "2027-07-09"
+size = 8
+approved = "2026-11-01"
