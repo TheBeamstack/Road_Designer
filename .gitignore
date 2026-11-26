@@ -33,3 +33,6 @@ Thumbs.db
 
 # Streamlit
 .streamlit/secrets.toml
+
+# diwan lane signal (`.agent.toml` [paths] stop): a local stop that reached main would halt every machine
+docs/.loop-stop
