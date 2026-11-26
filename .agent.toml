@@ -1,0 +1,33 @@
+# .agent.toml — Road_Designer's binding to `diwan` (schema: `diwan/docs/seats/BINDINGS.md`).
+# The product reference and the rules the code keeps are `docs/INVARIANTS.md`.
+
+[repo]
+name     = "Road_Designer"
+language = "python"                      # the engine and backend; `frontends/react/` is built by verify
+diwan    = "../diwan"                    # overridable by $DIWAN
+
+[paths]
+state      = "docs/CURRENT_STATE.md"
+backlog    = "docs/BACKLOG.md"
+docs       = "docs"
+stop       = "docs/.loop-stop"           # .gitignore'd: a local signal reaching main halts every machine
+seats      = "docs/seats/README.md"
+blockers   = "docs/BLOCKERS.md"
+decisions  = "docs/DECISIONS.md"
+milestones = "docs/MILESTONES.toml"
+
+[commands]
+# The tests and the React build; `.github/workflows/ci.yml` runs the same script.
+verify = "bash scripts/verify.sh"
+
+[cycle]
+evidence        = ["road_designer/", "backend/", "frontends/", "tests/", "scripts/", ".github/workflows/"]
+summary_adapter = "backlog"
+
+[review]
+two_step_high_risk = false
+
+# Fallback author outside a seat's turn; a row in `diwan/scripts/accounts.toml` (R53).
+[git]
+author_name  = "Davidian-Abdo"
+author_email = "daoudiabdellah1999@gmail.com"

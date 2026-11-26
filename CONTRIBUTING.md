@@ -19,7 +19,7 @@ pytest backend/tests/ -v
 The engineering reference for how the code is organised, the invariants it must
 keep (PK as the independent variable, French on-drawing labels, `DesignConfig`
 as the only configuration contract, no module-level constants, …) and the bug
-history is [`CLAUDE.md`](CLAUDE.md) / [`AGENTS.md`](AGENTS.md). Match the style
+history is [`CLAUDE.md`](CLAUDE.md) / [`docs/INVARIANTS.md`](docs/INVARIANTS.md). Match the style
 and conventions of the surrounding code.
 
 ## Pull requests
