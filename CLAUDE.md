@@ -708,7 +708,7 @@ redeployed, or taken down without affecting the others:
 
 | Surface | Code | Hosting | URL |
 |---|---|---|---|
-| Streamlit app | `frontends/streamlit/app.py` | Streamlit Community Cloud (always-on fallback) | TODO(user): fill in after first real deploy |
+| Streamlit app — **frozen** | `frontends/streamlit/app.py` | Streamlit Community Cloud (always-on fallback; shows a notice linking `rd.beam-stack.com` as the maintained app) | TODO(user): fill in after first real deploy |
 | React SPA | `frontends/react/` | Cloudflare Pages (static build), custom domain `rd.beam-stack.com` | TODO(user): confirm after first real deploy |
 | FastAPI service | `backend/` | **Hugging Face Spaces** (Docker SDK, `CPU Basic` hardware — needs a **PRO** account to create, hardware itself is $0/hour) — **current host**. Google Cloud Run is the documented later-promotion path (§ 15 Part G / `DEPLOYMENT.md` Part G) if usage ever outgrows a single flat-rate Space. | TODO(user): fill in after first real deploy |
 
@@ -740,6 +740,10 @@ redeployed, or taken down without affecting the others:
 it keeps its URL and its users untouched. The React + FastAPI pair is a second, more
 "professional-looking" product (custom UI, SVG previews, async job polling) built for
 a different deployment story (static SPA + serverless-ish API) without touching the first.
+
+**The Streamlit app is frozen:** `frontends/streamlit/` takes no new features; a change there may
+only keep it running against the engine (an engine API change, a dependency bump, a crash fix) or
+keep the § 10 non-negotiables and the "Powered by Beamstack" credit. New features go to the React SPA.
 
 ### The one engine change
 

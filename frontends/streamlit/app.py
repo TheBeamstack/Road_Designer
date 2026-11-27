@@ -821,6 +821,11 @@ if "result" not in st.session_state:
 
 
 with tab_run:
+    st.info(
+        "Cette application ne reçoit plus de nouvelles fonctionnalités. "
+        "La version maintenue de Road Designer est sur "
+        "[rd.beam-stack.com](https://rd.beam-stack.com)."
+    )
     col_a, col_b = st.columns([2, 1])
     with col_a:
         st.subheader("Préparation des fichiers")
