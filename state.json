@@ -145,7 +145,7 @@
     "title": "The Streamlit surface is declared frozen and points its users at rd.beam-stack.com",
     "verify": "bash scripts/verify.sh"
    },
-   "status": "review"
+   "status": "done"
   }
  },
  "schema": 1
