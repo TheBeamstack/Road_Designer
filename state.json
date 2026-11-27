@@ -79,6 +79,16 @@
    "opened": "2026-11-27T06:08Z",
    "scope": "item",
    "title": "systemd-analyze --user verify refused in the box review session: T-008 done-when 2 unexecuted"
+  },
+  "B-20261127-09": {
+   "by": "hmdnah",
+   "cleared": "-",
+   "item": "T-006",
+   "key": "t006-golden-ci-x86",
+   "need": "builder: zayd, make T-006's golden test in tests/test_build_golden.py pass on CI's x86_64 runner as well as on box at rtol 1e-9, then finish T-006 with --continue",
+   "opened": "2026-11-27T17:38Z",
+   "scope": "item",
+   "title": "PR #17 (T-006) CI verify red: tests/test_build_golden.py's pinned Σ Déblai 35829.532239 is box-only, CI run 45947844286 gets 35799.377216 (rel 8.4e-4)"
   }
  },
  "decisions": {
@@ -287,7 +297,9 @@
   },
   "T-006": {
    "approved": "",
-   "blockers": [],
+   "blockers": [
+    "B-20261127-09"
+   ],
    "branch": "task/T-006-build-design-on-the-samples-runs-faster",
    "holder": "zayd",
    "pr": 17,
