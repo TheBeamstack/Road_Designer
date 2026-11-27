@@ -78,11 +78,13 @@
 - implements: docs/INVARIANTS.md §4 (data flow), §5 (mnt_engine.py, cross_section.py, dxf_export.py) and §7.3 (cubature run order)
 - done-when: dxf_export.py no longer calls all_sections when the design already carries the sections build_design computed, and no longer overwrites design.section_areas
 - done-when: TerrainModel offers a vectorised query that returns the same values as query_z point by point, with the same nearest-neighbour fallback and one-time warning outside the hull, pinned by a test comparing both on the samples
-- done-when: a test pins Σ Déblai, Σ Remblai and the PVI elevations of build_design on the samples to the values main gives before this change, within 1e-9 relative
+- done-when: a test pins Σ Déblai, Σ Remblai and the PVI elevations of build_design on the samples to the values main gives before this change, within 0.5 % relative for each Σ and 0.01 m for each PVI elevation, a tolerance that covers main's own x86_64-vs-aarch64 spread (B-20261127-10), and passes on box and on CI
+- done-when: the PR body gives Σ Déblai and Σ Remblai from main and from the branch, measured on the same machine, equal within 1e-9 relative
 - done-when: a committed script scripts/bench_build.py prints build_design's wall time on the samples, and the PR body gives its output on main and on the branch, measured on the same machine
 - done-when: bash scripts/verify.sh is green
 - verify: bash scripts/verify.sh
 - depends-on: T-004 · area: backend · machine: any · risk: normal
+- note: done-when 3 corrected by the steward on B-20261127-10: a 1e-9 cross-platform pin is impossible because main itself differs by rel 5.0e-4 between platforms; same-machine exactness moved to done-when 4
 - milestone: M-roaddesigner-02
 
 ### T-007 — The ligne-rouge optimiser evaluates its objective vectorised, so SLSQP finishes faster
