@@ -745,15 +745,20 @@ a different deployment story (static SPA + serverless-ish API) without touching 
 only keep it running against the engine (an engine API change, a dependency bump, a crash fix) or
 keep the § 10 non-negotiables and the "Powered by Beamstack" credit. New features go to the React SPA.
 
-### The one engine change
+### The engine changes
 
-`road_designer/road_design.py`'s `build_design()` gained a single additive kwarg:
-`return_design: bool = False`. When `True`, the returned dict also carries `"design"` — the
+`road_designer/road_design.py`'s `build_design()` gained two additive kwargs.
+The first is `return_design: bool = False`. When `True`, the returned dict also carries `"design"` — the
 constructed `RoadDesign` instance — so `backend/app/routers/preview.py` can read plan/profile/
 Bruckner data via the engine's existing public getters (`get_plan_axis`, `get_profile_data`,
-etc.) without re-deriving them or adding new engine computation. Default behavior and the
-existing positional/keyword order for the CLI and Streamlit callers is unchanged. This is the
-**only** change under `road_designer/` — every other constraint in this file (no module-level
+etc.) without re-deriving them or adding new engine computation. The second is keyword-only
+`progress=None`: a callable invoked as `progress(stage)` at each of `tracé et ligne rouge`,
+`profils en travers`, `cubatures`, `DXF`, `XLSX`, `PDF plan`, `PDF profils en travers`, and as
+`progress(stage, page, pages)` after each PDF page (`pages` counts the cover), forwarded through
+the `progress` kwarg of `write_plan_pdf` / `write_pt_pdf`; `backend/app/jobs.py` stores it for
+`GET /designs/{id}`. Default behavior and the
+existing positional/keyword order for the CLI and Streamlit callers is unchanged. These are the
+**only** changes under `road_designer/` — every other constraint in this file (no module-level
 constants, `DesignConfig` as the sole configuration contract, French on-drawing labels, PK as
 the independent variable, etc.) still applies untouched to any future engine work.
 
@@ -773,7 +778,8 @@ the independent variable, etc.) still applies untouched to any future engine wor
 - **Request lifecycle:** `POST /designs` (multipart: axe file + either a terrain CSV or
   synth-terrain params + the `DesignConfigIn`/`CartoucheInfoIn` JSON) returns `202` + a job id
   immediately; the actual `build_design()` call runs in a worker thread. `GET /designs/{id}`
-  reports `queued|running|done|error` plus warnings once done. `GET /designs/{id}/files/{kind}`
+  reports `queued|running|done|error`, the running job's `stage`/`page`/`pages` (null while
+  queued), plus warnings once done. `GET /designs/{id}/files/{kind}`
   streams one of `dxf|xlsx|pdf_plan|pdf_pt`. `GET /designs/{id}/preview` returns the JSON the
   React SVG charts consume (built via `return_design=True`).
 - **CORS** is controlled by the `ALLOWED_ORIGIN` env var (comma-separated); unset, it defaults to

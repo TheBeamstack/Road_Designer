@@ -85,6 +85,9 @@ def get_design(job_id: str):
         files=files,
         warnings=job.warnings,
         error=job.error,
+        stage=job.stage,
+        page=job.page,
+        pages=job.pages,
     )
 
 

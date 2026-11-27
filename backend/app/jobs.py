@@ -43,10 +43,18 @@ class Job:
     warnings: Optional[List[str]] = None
     error: Optional[str] = None
     design: Optional[object] = None  # RoadDesign, for the preview endpoint
+    stage: Optional[str] = None
+    page: Optional[int] = None
+    pages: Optional[int] = None
 
 
 JOBS: Dict[str, Job] = {}
 _executor = ThreadPoolExecutor(max_workers=2)
+
+
+def _record_progress(job: Job, stage: str,
+                     page: Optional[int] = None, pages: Optional[int] = None) -> None:
+    job.stage, job.page, job.pages = stage, page, pages
 
 
 def _run_build(job: Job) -> None:
@@ -55,6 +63,7 @@ def _run_build(job: Job) -> None:
         result = build_design(
             job.cfg, job.axe_path, job.terrain_path,
             job.tmpdir / "out", return_design=True,
+            progress=lambda *args: _record_progress(job, *args),
         )
         job.files = {
             "dxf": result["dxf"],
