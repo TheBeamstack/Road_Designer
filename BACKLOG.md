@@ -49,3 +49,4 @@
 
 ## Parked
 
+- 2026-11-27 The React app builds on tailwindcss 4 — frontends/react uses tailwindcss 4 with @tailwindcss/postcss, its postcss.config.js and tailwind config migrated, and the UI renders as before · implements: docs/INVARIANTS.md §15 frontends/react/ — Vite + React + TypeScript + Tailwind
