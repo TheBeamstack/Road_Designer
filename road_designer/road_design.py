@@ -83,16 +83,15 @@ class RoadDesign:
         )
 
         # 4. TN at vertices and at dense samples ─────────────────────────
-        self.vert_ground_z = self.terrain.query_z_many(
-            [x for _, x, _ in self.station_vertices],
-            [y for _, _, y in self.station_vertices],
-        )
+        self.vert_ground_z = np.array([
+            self.terrain.query_z(x, y)
+            for _, x, y in self.station_vertices
+        ])
         self.dense_points = self.parser.sample_points(cfg.profile_sampling)
         self.dense_pks = np.array([p[0] for p in self.dense_points])
-        self.dense_ground_z = self.terrain.query_z_many(
-            [x for _, x, _ in self.dense_points],
-            [y for _, _, y in self.dense_points],
-        )
+        self.dense_ground_z = np.array([
+            self.terrain.query_z(x, y) for _, x, y in self.dense_points
+        ])
         # Plan-view dense rotated coords (for the smooth axis polyline)
         dense_xy = np.array([[x, y] for _, x, y in self.dense_points])
         dense_rot = rotate_points(dense_xy, self.rot_angle)
