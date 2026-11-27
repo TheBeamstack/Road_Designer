@@ -379,18 +379,28 @@ minutes) before the app responds normally again.
 
 Unlike this guide's old Cloud Run advice, **keeping this Space warm costs nothing extra** — you
 already pay the flat PRO subscription, and `CPU Basic` hours are $0 regardless of how continuously
-they're used. So it's safe, and recommended, to use the keep-alive workflow this repo ships:
+they're used. So it's safe, and recommended, to run the keep-alive timer this repo ships in
+`deploy/keep-alive/` on box 1. It is a user-level systemd service that curls your `/health` URL
+(`--max-time 20`), and a timer that re-runs it after 20 minutes plus a fresh random 0–100 minutes,
+so each gap is 20–120 minutes — comfortably under the 48-hour sleep window.
 
-1. Repo **Settings → Secrets and variables → Actions → New repository secret**.
-2. **Name**: `BACKEND_HEALTH_URL`
-   **Value**: `https://YOUR-SPACE-URL/health` (from A.7).
-3. `.github/workflows/keep-alive-backend.yml` will now ping that URL every ~12 minutes,
-   comfortably under the 48-hour sleep window, so the Space effectively never sleeps.
+On box 1, from a checkout of this repo:
 
-If you'd rather not run the extra GitHub Actions minutes (they're free/cheap on a public repo,
-but it's a fair thing to skip), just leave the secret unset — the workflow no-ops, and you accept
-an occasional cold start on the first request after a quiet stretch. Both are reasonable choices;
-the keep-alive ping is the only one that guarantees no cold starts.
+```bash
+mkdir -p ~/.config/systemd/user ~/.config/road-designer
+cp deploy/keep-alive/road-designer-keep-alive.{service,timer} ~/.config/systemd/user/
+cp deploy/keep-alive/keep-alive.env.example ~/.config/road-designer/keep-alive.env
+# edit keep-alive.env: BACKEND_HEALTH_URL=https://YOUR-SPACE-URL/health (from A.7)
+systemctl --user daemon-reload
+systemctl --user enable --now road-designer-keep-alive.timer
+loginctl enable-linger "$USER"     # keep the timer running when nobody is logged in
+```
+
+Check it with `systemctl --user list-timers road-designer-keep-alive.timer` (next run) and
+`journalctl --user -u road-designer-keep-alive.service` (each ping's result).
+
+If you'd rather not run it, skip this Part and accept an occasional cold start on the first
+request after a quiet stretch; the timer is the only option that guarantees no cold starts.
 
 ---
 
@@ -454,7 +464,7 @@ reasonable follow-up if this becomes a chore — not set up here to keep the fir
 | Space shows "Runtime error" after building | Usually an import error or missing env var at startup | **Logs** tab shows the traceback; test the same image locally first with `docker build -t road-designer-api . && docker run --rm -p 8000:7860 road-designer-api` |
 | Browser console shows a CORS error when submitting | `ALLOWED_ORIGIN` doesn't match the SPA's origin exactly | Recheck Part C — no trailing slash, exact `https://`, exact hostname |
 | Every API call from the SPA hits `localhost` or 404s | `VITE_API_BASE_URL` wasn't set before the last build, or has a typo | Recheck B.3, then trigger a fresh Cloudflare Pages build — it's baked in at build time |
-| First request after a while takes ~10–30 s | The Space went to sleep (48 h idle on `CPU Basic`) | Expected if you skipped the keep-alive ping (Part E). Set `BACKEND_HEALTH_URL` to avoid it. |
+| First request after a while takes ~10–30 s | The Space went to sleep (48 h idle on `CPU Basic`) | Expected if you skipped the keep-alive timer (Part E). Install it to avoid this. |
 | Job seems slow on big inputs | 100+ page cross-section PDFs take real time to render | Give it a minute; check the Space's **Logs** tab for progress |
 | Creating a Docker Space is blocked / greyed out | Account isn't on PRO yet | Recheck A.1 — the PRO subscription must be active before the Docker SDK option is usable |
 | Streamlit app blank / import error after the path change | Main file path not saved, or a stale deploy | Recheck Part D's path string, save again, "Reboot app" from the dashboard |
@@ -471,8 +481,8 @@ reasonable follow-up if this becomes a chore — not set up here to keep the fir
   hardware tier this backend runs on is listed at **$0/hour**, so the $9/month is the whole
   recurring cost for the backend, independent of how much or how little it's used (barring
   Hugging Face changing that pricing structure again).
-- **GitHub Actions** (optional keep-alive ping, Part E) — public repos get free minutes; a
-  ping every 12 minutes is a negligible fraction of that allotment.
+- **Keep-alive timer** (optional, Part E) — runs on box 1, which is already running; no
+  extra cost.
 
 **When to reconsider Google Cloud Run (Part G).** HF PRO's $9/month is flat regardless of usage.
 Cloud Run's free monthly allotment (~50 instance-hours at 1 vCPU/1 GiB) is real, and its
@@ -569,9 +579,9 @@ well under that.
 
 The trade-off: after it scales to zero, the next request pays a **cold start** (~10–30 s for
 this image). That's normal, and — unlike the HF setup in Part E — you should **not** wire up
-`.github/workflows/keep-alive-backend.yml` against a `--no-cpu-throttling` Cloud Run service:
-keeping it warm 24/7 is billed continuously and would blow the free monthly allotment. Leave the
-`BACKEND_HEALTH_URL` secret unset (or pointed at nothing) if you've fully cut over to Cloud Run.
+the `deploy/keep-alive/` timer to a `--no-cpu-throttling` Cloud Run service: keeping it warm
+24/7 is billed continuously and would blow the free monthly allotment. Once you've fully cut over
+to Cloud Run, stop it on box 1 with `systemctl --user disable --now road-designer-keep-alive.timer`.
 
 **Updating later, on Cloud Run:** re-run the `gcloud run deploy` command from G.3 after pushing
 changes — Cloud Run does not auto-deploy from GitHub either, unless you wire up **Cloud Run →

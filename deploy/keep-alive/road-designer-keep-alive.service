@@ -1,0 +1,14 @@
+# SPDX-FileCopyrightText: 2026 Beamstack <https://beam-stack.com>
+# SPDX-License-Identifier: LicenseRef-BCL-1.1
+# Pings the backend's /health once; road-designer-keep-alive.timer schedules it.
+# Install: CLAUDE.md § 15 "Keep-alive" / DEPLOYMENT.md Part E.
+[Unit]
+Description=Road-Designer backend keep-alive ping
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+# Holds BACKEND_HEALTH_URL=https://<space>.hf.space/health (see keep-alive.env.example).
+EnvironmentFile=%h/.config/road-designer/keep-alive.env
+ExecStart=/usr/bin/curl --fail --silent --show-error --max-time 20 ${BACKEND_HEALTH_URL}

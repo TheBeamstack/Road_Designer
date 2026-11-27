@@ -133,9 +133,11 @@ Road_designe/
 ├── .gitignore                     ← *.dxf, *.xlsx, *.pdf, Road_venv/, .venv/, output/
 ├── .github/
 │   └── workflows/
-│       └── keep-alive-backend.yml ← optional cron ping (BACKEND_HEALTH_URL secret) to stop the backend
-│                                    sleeping; recommended for the current HF Spaces host (free to run
-│                                    there), NOT for Cloud Run with --no-cpu-throttling (§ 15 Part E vs G)
+│       └── ci.yml                 ← runs scripts/verify.sh on every PR and on main
+├── deploy/
+│   └── keep-alive/                ← user-level systemd .service + .timer pinging the backend's /health every
+│                                    20-120 min at random, run on box 1; NOT for Cloud Run with
+│                                    --no-cpu-throttling (§ 15 Keep-alive, Part E vs G)
 │
 ├── main.py                        ← CLI entry point (unchanged)
 │
@@ -184,7 +186,7 @@ Road_designe/
 │   │   └── routers/
 │   │       ├── designs.py         ← POST /designs, GET /designs/{id}, GET /designs/{id}/files/{kind}
 │   │       ├── preview.py         ← GET /designs/{id}/preview (plan/profile/Bruckner JSON for the SPA)
-│   │       └── health.py          ← GET /health (also pinged by the optional keep-alive workflow)
+│   │       └── health.py          ← GET /health (also pinged by the deploy/keep-alive/ timer)
 │   ├── requirements.txt           ← fastapi/uvicorn/pydantic + engine deps, pinned; no streamlit
 │   └── tests/                     ← pytest + httpx, reuses tests/conftest.py's fixtures
 │   (the backend Docker image is built from the repo-root Dockerfile above)
@@ -829,14 +831,24 @@ the independent variable, etc.) still applies untouched to any future engine wor
   crashed with a 500 instead of returning the intended 422. Fixed by projecting each error down
   to its plain-data fields (`type`/`loc`/`msg`) before raising. Watch for this same pattern
   (`exc.errors()` forwarded verbatim) in any future custom validator added to `schemas.py`.
-- **Keep-alive**: `.github/workflows/keep-alive-backend.yml` cron-pings the backend every ~12
-  minutes via the `BACKEND_HEALTH_URL` repo secret. **Recommended for the current HF Spaces
-  host**: `CPU Basic` hardware sleeps after a fixed, unconfigurable 48 h of inactivity, and
-  pinging it costs nothing extra (PRO is a flat monthly fee; `CPU Basic` hours are $0/hour
-  regardless of how continuously they're used). **Do not point it at a Cloud Run deployment**
-  if the backend is ever promoted there (§ 15 Part G) — with `--no-cpu-throttling` a kept-warm
-  instance is billed continuously and blows the free monthly allotment. No-ops gracefully if the
-  secret is unset.
+- **Keep-alive**: `deploy/keep-alive/` holds a user-level systemd service that curls
+  `BACKEND_HEALTH_URL` (read from `~/.config/road-designer/keep-alive.env`, `--max-time 20`) and a
+  timer that re-runs it after 20 min plus a fresh random 0–100 min, so every interval is 20–120 min.
+  It runs on box 1, installed with:
+  ```bash
+  mkdir -p ~/.config/systemd/user ~/.config/road-designer
+  cp deploy/keep-alive/road-designer-keep-alive.{service,timer} ~/.config/systemd/user/
+  cp deploy/keep-alive/keep-alive.env.example ~/.config/road-designer/keep-alive.env  # set the URL
+  systemctl --user daemon-reload
+  systemctl --user enable --now road-designer-keep-alive.timer
+  loginctl enable-linger "$USER"     # keep the user timer running without a login session
+  ```
+  **Recommended for the current HF Spaces host**: `CPU Basic` hardware sleeps after a fixed,
+  unconfigurable 48 h of inactivity, and pinging it costs nothing extra (PRO is a flat monthly fee;
+  `CPU Basic` hours are $0/hour regardless of how continuously they're used). **Do not point it at
+  a Cloud Run deployment** if the backend is ever promoted there (§ 15 Part G) — with
+  `--no-cpu-throttling` a kept-warm instance is billed continuously and blows the free monthly
+  allotment; stop it with `systemctl --user disable --now road-designer-keep-alive.timer`.
 
 ### frontends/react/ — Vite + React + TypeScript + Tailwind
 
@@ -888,7 +900,7 @@ docker run --rm -v "//c/path/to/Road_designe/tests:/app/tests:ro" \
 |---|---|---|
 | HF Space Variables (Settings → Variables and secrets) | `ALLOWED_ORIGIN` | The SPA's origin `https://rd.beam-stack.com` (the default when unset); comma-add `https://road-designer.pages.dev` only to also allow the Cloudflare fallback |
 | Cloudflare Pages dashboard | `VITE_API_BASE_URL` | The deployed backend URL — an HF Space `https://<user>-<space>.hf.space` (current), or a Cloud Run URL `https://…run.app` if later promoted (§ 15 Part G) |
-| GitHub repo secret (optional, recommended) | `BACKEND_HEALTH_URL` | `https://<space>.hf.space/health` — keeps the HF Space from sleeping, free to run there; **not** for a Cloud Run deployment with `--no-cpu-throttling` |
+| Box 1, `~/.config/road-designer/keep-alive.env` (optional, recommended) | `BACKEND_HEALTH_URL` | `https://<space>.hf.space/health` — read by the `deploy/keep-alive/` timer to keep the HF Space from sleeping, free to run there; **not** for a Cloud Run deployment with `--no-cpu-throttling` |
 | Streamlit Cloud dashboard | "Main file path" setting | `frontends/streamlit/app.py` (must be updated manually post-move — cannot be set from the repo; this is the fix if the Streamlit app currently doesn't load) |
 
 **[`DEPLOYMENT.md`](../DEPLOYMENT.md)** (repo root) is the full step-by-step, beginner-oriented

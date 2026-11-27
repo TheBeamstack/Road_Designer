@@ -1,0 +1,15 @@
+# SPDX-FileCopyrightText: 2026 Beamstack <https://beam-stack.com>
+# SPDX-License-Identifier: LicenseRef-BCL-1.1
+# Each interval is 20 min plus a fresh random 0-100 min: 20 to 120 min between pings.
+[Unit]
+Description=Road-Designer backend keep-alive ping, every 20-120 min at random
+
+[Timer]
+OnActiveSec=20min
+OnUnitActiveSec=20min
+RandomizedDelaySec=100min
+FixedRandomDelay=no
+AccuracySec=1s
+
+[Install]
+WantedBy=timers.target
