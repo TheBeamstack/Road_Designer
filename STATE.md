@@ -1,10 +1,10 @@
 # STATE — Road_Designer, rendered from `state.json` by scripts/state.py; never edited by hand
 
-next: builder (any) — T-002
+next: blocked: depends on T-002 (claimed) — T-003
 
 ## Claims
 
-none
+- T-002 zayd on task/T-002-every-doc-names-rd-beam-stack-com-as-the
 
 ## Review
 
@@ -16,7 +16,7 @@ none
 
 ## BLOCKED
 
-- T-003 — depends on T-002 (ready)
+- T-003 — depends on T-002 (claimed)
 
 ## Open blockers
 

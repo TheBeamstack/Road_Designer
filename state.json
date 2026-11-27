@@ -98,8 +98,8 @@
   "T-002": {
    "approved": "",
    "blockers": [],
-   "branch": "",
-   "holder": "",
+   "branch": "task/T-002-every-doc-names-rd-beam-stack-com-as-the",
+   "holder": "zayd",
    "pr": 0,
    "spec": {
     "area": "spec",
@@ -120,7 +120,7 @@
     "title": "Every doc names rd.beam-stack.com as the SPA's origin, and DEPLOYMENT.md Part F proves CORS is locked",
     "verify": "bash scripts/verify.sh"
    },
-   "status": "ready"
+   "status": "claimed"
   },
   "T-003": {
    "approved": "",
