@@ -19,6 +19,16 @@
    "opened": "2026-11-27T00:48Z",
    "scope": "item",
    "title": "PR #8 vite 8.3.5 fails npm ci: @vitejs/plugin-react 4.7.0 peers vite <=7; branch predates .agent.toml so no review can post"
+  },
+  "B-20261127-03": {
+   "by": "hmdnah",
+   "cleared": "-",
+   "item": "PR#7",
+   "key": "deps-7-tailwind4",
+   "need": "steward: close PR #7 and route Tailwind 4 as a builder task that adds @tailwindcss/postcss and migrates postcss.config.js",
+   "opened": "2026-11-27T00:49Z",
+   "scope": "item",
+   "title": "PR #7 conflicts with main after #10, and tailwindcss 4.3.3 fails its own build: the PostCSS plugin moved to @tailwindcss/postcss"
   }
  },
  "discovered": [],

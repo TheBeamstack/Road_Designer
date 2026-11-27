@@ -22,3 +22,4 @@ none
 ## Open blockers
 
 - B-20261127-02 PR #8 vite 8.3.5 fails npm ci: @vitejs/plugin-react 4.7.0 peers vite <=7; branch predates .agent.toml so no review can post — need: steward: close PR #8 and route vite 8 as one change that also bumps @vitejs/plugin-react
+- B-20261127-03 PR #7 conflicts with main after #10, and tailwindcss 4.3.3 fails its own build: the PostCSS plugin moved to @tailwindcss/postcss — need: steward: close PR #7 and route Tailwind 4 as a builder task that adds @tailwindcss/postcss and migrates postcss.config.js
