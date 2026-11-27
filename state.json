@@ -321,7 +321,7 @@
     "title": "build_design on the samples runs faster with unchanged outputs: no second cross-section pass, vectorised TN queries",
     "verify": "bash scripts/verify.sh"
    },
-   "status": "review"
+   "status": "claimed"
   },
   "T-007": {
    "approved": "",

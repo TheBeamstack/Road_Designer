@@ -1,14 +1,14 @@
 # STATE — Road_Designer, rendered from `state.json` by scripts/state.py; never edited by hand
 
-next: reviewer (any): PR #17 — T-006
+next: blocked: depends on T-006 (claimed) — T-007
 
 ## Claims
 
-none
+- T-006 zayd on task/T-006-build-design-on-the-samples-runs-faster
 
 ## Review
 
-- T-006 PR #17 by zayd — reviewer (any): PR #17
+none
 
 ## Awaiting approval (R93)
 
@@ -16,7 +16,7 @@ none
 
 ## BLOCKED
 
-- T-007 — depends on T-006 (review)
+- T-007 — depends on T-006 (claimed)
 
 ## Open blockers
 
