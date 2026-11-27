@@ -11,7 +11,7 @@
 | T-005 | done | The SPA shows the running job's stage and PDF page counter | frontend | any | normal | T-004 |
 | T-006 | review | build_design on the samples runs faster with unchanged outputs: no second cross-section pass, vectorised TN queries | backend | any | normal | T-004 |
 | T-007 | blocked | The ligne-rouge optimiser evaluates its objective vectorised, so SLSQP finishes faster | backend | any | normal | T-006 |
-| T-008 | ready | A systemd timer kept in deploy/keep-alive/ pings the backend at a random 20-120 min, and the GitHub keep-alive workflow is gone | infra | box | normal | T-004 |
+| T-008 | claimed | A systemd timer kept in deploy/keep-alive/ pings the backend at a random 20-120 min, and the GitHub keep-alive workflow is gone | infra | box | normal | T-004 |
 
 ### T-001 — The backend answers CORS only for https://rd.beam-stack.com unless ALLOWED_ORIGIN says otherwise
 - outcome: backend/app/main.py defaults ALLOWED_ORIGIN to https://rd.beam-stack.com instead of *, so an unset variable fails closed; local dev sets it explicitly

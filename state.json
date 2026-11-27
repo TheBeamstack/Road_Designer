@@ -275,8 +275,8 @@
   "T-008": {
    "approved": "",
    "blockers": [],
-   "branch": "",
-   "holder": "",
+   "branch": "task/T-008-a-systemd-timer-kept-in-deploy-keep-aliv",
+   "holder": "zayd",
    "pr": 0,
    "spec": {
     "area": "infra",
@@ -296,7 +296,7 @@
     "title": "A systemd timer kept in deploy/keep-alive/ pings the backend at a random 20-120 min, and the GitHub keep-alive workflow is gone",
     "verify": "bash scripts/verify.sh && systemd-analyze --user verify deploy/keep-alive/*.service deploy/keep-alive/*.timer"
    },
-   "status": "ready"
+   "status": "claimed"
   }
  },
  "schema": 1

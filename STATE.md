@@ -1,10 +1,10 @@
 # STATE — Road_Designer, rendered from `state.json` by scripts/state.py; never edited by hand
 
-next: builder (box) — T-008
+next: reviewer (any): PR #17 — T-006
 
 ## Claims
 
-none
+- T-008 zayd on task/T-008-a-systemd-timer-kept-in-deploy-keep-aliv
 
 ## Review
 
