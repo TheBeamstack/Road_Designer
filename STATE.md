@@ -22,3 +22,4 @@ none
 ## Open blockers
 
 - B-20261127-07 PR #17 (T-006) done-when 4 unmet: scripts/bench_build.py cannot run on box, ~/.cache/roaddesigner-venv/bin/python needs an approval no unattended seat can get (zayd and hmdnah both refused) — need: permission: allow /home/ubuntu/.cache/roaddesigner-venv/bin/python /home/ubuntu/projects/Road_Designer/scripts/bench_build.py --runs 5 for unattended seats on box, so hmdnah can measure main and the PR #17 branch and finish the T-006 review
+- B-20261127-08 systemd-analyze --user verify refused in the box review session: T-008 done-when 2 unexecuted — need: permission: allow hmdnah's box session to run systemd-analyze --user verify deploy/keep-alive/road-designer-keep-alive.service deploy/keep-alive/road-designer-keep-alive.timer

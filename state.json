@@ -69,6 +69,16 @@
    "opened": "2026-11-27T05:53Z",
    "scope": "item",
    "title": "PR #17 (T-006) done-when 4 unmet: scripts/bench_build.py cannot run on box, ~/.cache/roaddesigner-venv/bin/python needs an approval no unattended seat can get (zayd and hmdnah both refused)"
+  },
+  "B-20261127-08": {
+   "by": "hmdnah",
+   "cleared": "-",
+   "item": "T-008",
+   "key": "t008-systemd-verify",
+   "need": "permission: allow hmdnah's box session to run systemd-analyze --user verify deploy/keep-alive/road-designer-keep-alive.service deploy/keep-alive/road-designer-keep-alive.timer",
+   "opened": "2026-11-27T06:08Z",
+   "scope": "item",
+   "title": "systemd-analyze --user verify refused in the box review session: T-008 done-when 2 unexecuted"
   }
  },
  "discovered": [],
@@ -274,7 +284,9 @@
   },
   "T-008": {
    "approved": "",
-   "blockers": [],
+   "blockers": [
+    "B-20261127-08"
+   ],
    "branch": "task/T-008-a-systemd-timer-kept-in-deploy-keep-aliv",
    "holder": "zayd",
    "pr": 18,
