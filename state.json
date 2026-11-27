@@ -81,6 +81,7 @@
    "title": "systemd-analyze --user verify refused in the box review session: T-008 done-when 2 unexecuted"
   }
  },
+ "decisions": {},
  "discovered": [],
  "found": [
   {
