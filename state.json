@@ -3,7 +3,7 @@
  "discovered": [],
  "lane": "Road_Designer",
  "layout": [],
- "next_id": 3,
+ "next_id": 4,
  "parked": [],
  "rows": {
   "T-001": {
@@ -54,6 +54,31 @@
     "outcome": "README.md, README.fr.md, DEPLOYMENT.md, CLAUDE.md, docs/INVARIANTS.md, backend/README.md, frontends/react/README.md and frontends/react/.env.example name https://rd.beam-stack.com where they named road-designer.beam-stack.com or a pages.dev origin, and describe the T-001 CORS default",
     "risk": "normal",
     "title": "Every doc names rd.beam-stack.com as the SPA's origin, and DEPLOYMENT.md Part F proves CORS is locked",
+    "verify": "bash scripts/verify.sh"
+   },
+   "status": "ready"
+  },
+  "T-003": {
+   "approved": "",
+   "blockers": [],
+   "branch": "",
+   "holder": "",
+   "pr": 0,
+   "spec": {
+    "area": "frontend",
+    "depends_on": "T-002",
+    "done_when": [
+     "§15 of CLAUDE.md and docs/INVARIANTS.md names the Streamlit app as frozen in the surfaces table and says what a change to frontends/streamlit/ may still be",
+     "frontends/streamlit/app.py renders a French notice with a link to https://rd.beam-stack.com above the generate controls, and touches no other behaviour",
+     "the Powered by Beamstack credit in frontends/streamlit/app.py is unchanged",
+     "bash scripts/verify.sh is green"
+    ],
+    "implements": "docs/INVARIANTS.md §10 (Streamlit Cloud non-negotiables) and §15 (the surfaces table and Why two frontends)",
+    "machine": "any",
+    "milestone": "M-roaddesigner-01",
+    "outcome": "CLAUDE.md and docs/INVARIANTS.md §15 state that frontends/streamlit/ takes no new features, only fixes that keep it running against the engine, and the Streamlit app shows a one-line French notice linking https://rd.beam-stack.com as the maintained app",
+    "risk": "normal",
+    "title": "The Streamlit surface is declared frozen and points its users at rd.beam-stack.com",
     "verify": "bash scripts/verify.sh"
    },
    "status": "ready"

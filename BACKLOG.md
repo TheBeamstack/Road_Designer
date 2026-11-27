@@ -6,6 +6,7 @@
 |---|---|---|---|---|---|---|
 | T-001 | ready | The backend answers CORS only for https://rd.beam-stack.com unless ALLOWED_ORIGIN says otherwise | backend | any | normal | — |
 | T-002 | blocked | Every doc names rd.beam-stack.com as the SPA's origin, and DEPLOYMENT.md Part F proves CORS is locked | spec | any | normal | T-001 |
+| T-003 | blocked | The Streamlit surface is declared frozen and points its users at rd.beam-stack.com | frontend | any | normal | T-002 |
 
 ### T-001 — The backend answers CORS only for https://rd.beam-stack.com unless ALLOWED_ORIGIN says otherwise
 - outcome: backend/app/main.py defaults ALLOWED_ORIGIN to https://rd.beam-stack.com instead of *, so an unset variable fails closed; local dev sets it explicitly
@@ -30,6 +31,17 @@
 - done-when: bash scripts/verify.sh is green
 - verify: bash scripts/verify.sh
 - depends-on: T-001 · area: spec · machine: any · risk: normal
+- milestone: M-roaddesigner-01
+
+### T-003 — The Streamlit surface is declared frozen and points its users at rd.beam-stack.com
+- outcome: CLAUDE.md and docs/INVARIANTS.md §15 state that frontends/streamlit/ takes no new features, only fixes that keep it running against the engine, and the Streamlit app shows a one-line French notice linking https://rd.beam-stack.com as the maintained app
+- implements: docs/INVARIANTS.md §10 (Streamlit Cloud non-negotiables) and §15 (the surfaces table and Why two frontends)
+- done-when: §15 of CLAUDE.md and docs/INVARIANTS.md names the Streamlit app as frozen in the surfaces table and says what a change to frontends/streamlit/ may still be
+- done-when: frontends/streamlit/app.py renders a French notice with a link to https://rd.beam-stack.com above the generate controls, and touches no other behaviour
+- done-when: the Powered by Beamstack credit in frontends/streamlit/app.py is unchanged
+- done-when: bash scripts/verify.sh is green
+- verify: bash scripts/verify.sh
+- depends-on: T-002 · area: frontend · machine: any · risk: normal
 - milestone: M-roaddesigner-01
 
 ## Discovered
