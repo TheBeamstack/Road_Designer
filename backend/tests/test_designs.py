@@ -136,3 +136,16 @@ def test_preview_payload_shape(client, done_job):
     bruckner = body["bruckner"]
     assert len(bruckner["pk"]) == len(bruckner["m"])
     assert len(bruckner["pk"]) > 0
+
+
+def test_status_reports_progress_fields(client, done_job):
+    from backend.app import jobs
+    from road_designer.config import REFT_CAT_1
+
+    queued = jobs.create_job(REFT_CAT_1, b"", terrain_bytes=b"")
+    body = client.get(f"/designs/{queued.id}").json()
+    assert (body["stage"], body["page"], body["pages"]) == (None, None, None)
+
+    body = client.get(f"/designs/{done_job}").json()
+    assert body["stage"] == "PDF profils en travers"
+    assert body["page"] == body["pages"] > 0

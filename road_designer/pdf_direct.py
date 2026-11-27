@@ -29,7 +29,7 @@ from __future__ import annotations
 import datetime as _dt
 import io
 from pathlib import Path
-from typing import TYPE_CHECKING, List, Optional, Sequence, Tuple, Union
+from typing import TYPE_CHECKING, Callable, List, Optional, Sequence, Tuple, Union
 
 import matplotlib
 matplotlib.use("Agg")  # Streamlit-Cloud-safe (rule 9.3)
@@ -1025,16 +1025,23 @@ def _plan_windows(design: "RoadDesign") -> List[Tuple[float, float]]:
 
 def write_plan_pdf(dxf_path: Union[str, Path, None],
                    out_path: Union[str, Path],
-                   design: "RoadDesign") -> Path:
-    """One PDF page per ``sheet_length_pk`` window of road."""
+                   design: "RoadDesign", *,
+                   progress: Optional[Callable[[int, int], None]] = None) -> Path:
+    """One PDF page per ``sheet_length_pk`` window of road.
+
+    ``progress(page, pages)`` is called after each page, cover included.
+    """
     out_path = Path(out_path)
     windows = _plan_windows(design)
     n_pages = len(windows)
+    report = progress or (lambda page, pages: None)
     with PdfPages(out_path) as pdf:
         _cover_page(pdf, design, "Plan + Profil en long — par sections",
                     A1_LANDSCAPE_IN, n_pages)
+        report(1, n_pages + 1)
         for k, (a, b) in enumerate(windows, start=1):
             _render_plan_page(pdf, design, a, b, k, n_pages)
+            report(k + 1, n_pages + 1)
     print(f"PDF generated: {out_path}  ({n_pages} pages + cover)")
     return out_path
 
@@ -1253,8 +1260,12 @@ def _render_pt_page(pdf: PdfPages, design: "RoadDesign", sec,
 
 def write_pt_pdf(dxf_path: Union[str, Path, None],
                  out_path: Union[str, Path],
-                 design: "RoadDesign") -> Path:
-    """One PDF page per cross-section."""
+                 design: "RoadDesign", *,
+                 progress: Optional[Callable[[int, int], None]] = None) -> Path:
+    """One PDF page per cross-section.
+
+    ``progress(page, pages)`` is called after each page, cover included.
+    """
     out_path = Path(out_path)
     sections = getattr(design, "sections", None)
     if not sections:
@@ -1262,11 +1273,14 @@ def write_pt_pdf(dxf_path: Union[str, Path, None],
         from .cross_section import all_sections
         sections = all_sections(design)
     n = len(sections)
+    report = progress or (lambda page, pages: None)
     with PdfPages(out_path) as pdf:
         _cover_page(pdf, design, "Profils en travers",
                     PT_PAGE_IN, n)
+        report(1, n + 1)
         for k, sec in enumerate(sections, start=1):
             _render_pt_page(pdf, design, sec, k, n)
+            report(k + 1, n + 1)
     print(f"PDF generated: {out_path}  ({n} pages + cover)")
     return out_path
 

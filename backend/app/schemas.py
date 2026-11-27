@@ -182,3 +182,6 @@ class JobStatus(BaseModel):
     files: Optional[JobFiles] = None
     warnings: Optional[list[str]] = None
     error: Optional[str] = None
+    stage: Optional[str] = None
+    page: Optional[int] = None
+    pages: Optional[int] = None

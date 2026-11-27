@@ -14,7 +14,7 @@ attached here via ``self.cubatures``.
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Iterable, List, Optional, Tuple, Union
+from typing import Callable, Iterable, List, Optional, Tuple, Union
 
 import numpy as np
 from scipy.interpolate import UnivariateSpline
@@ -435,6 +435,8 @@ def build_design(
     terrain_path: Union[str, Path],
     out_dir: Union[str, Path],
     return_design: bool = False,
+    *,
+    progress: Optional[Callable[..., None]] = None,
 ) -> dict:
     """Build a full design and write DXF + XLSX into ``out_dir``.
 
@@ -446,6 +448,10 @@ def build_design(
     ``get_plan_edges``, ``get_profile_data``, ...) without duplicating any
     engine computation. Default behaviour/signature order for existing
     callers (CLI, Streamlit) is unchanged.
+
+    ``progress``, when given, is called as ``progress(stage)`` at the start
+    of each stage and as ``progress(stage, page, pages)`` after each PDF page
+    is written (``pages`` counts the cover).
     """
     # Mandatory: company_name must be set (used as PDF page header)
     if not cfg.cartouche.company_name or not cfg.cartouche.company_name.strip():
@@ -464,15 +470,20 @@ def build_design(
     out_dir = Path(out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
 
+    report = progress or (lambda *args: None)
+
+    report("tracé et ligne rouge")
     design = RoadDesign(terrain_path, axe_path, cfg)
 
     # Step 7 — precompute cross-sections so Step 7b can plug their
     # polygon areas into the cubatures.
+    report("profils en travers")
     sections = all_sections(design)
     design.section_areas = {s.pk: (s.cut_area, s.fill_area) for s in sections}
     design.sections = sections
 
     # Step 3 + 7b — cubatures (polygon-true where sections are available)
+    report("cubatures")
     design.cubatures = compute_cubatures(design)
 
     dxf_path = out_dir / cfg.dxf_filename
@@ -480,10 +491,16 @@ def build_design(
     pdf_plan_path = out_dir / cfg.pdf_plan_filename
     pdf_pt_path = out_dir / cfg.pdf_pt_filename
 
+    report("DXF")
     write_dxf(design, dxf_path)
+    report("XLSX")
     write_xlsx(design, xlsx_path)
-    write_plan_pdf(dxf_path, pdf_plan_path, design)
-    write_pt_pdf(dxf_path, pdf_pt_path, design)
+    report("PDF plan")
+    write_plan_pdf(dxf_path, pdf_plan_path, design,
+                   progress=lambda page, pages: report("PDF plan", page, pages))
+    report("PDF profils en travers")
+    write_pt_pdf(dxf_path, pdf_pt_path, design,
+                 progress=lambda page, pages: report("PDF profils en travers", page, pages))
 
     result = {
         "dxf": dxf_path,
