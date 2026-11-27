@@ -120,7 +120,7 @@
     "title": "Every doc names rd.beam-stack.com as the SPA's origin, and DEPLOYMENT.md Part F proves CORS is locked",
     "verify": "bash scripts/verify.sh"
    },
-   "status": "review"
+   "status": "done"
   },
   "T-003": {
    "approved": "",
