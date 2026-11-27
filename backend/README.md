@@ -15,12 +15,11 @@ From the **repo root** (not from inside `backend/`) so `road_designer` resolves 
 python -m venv .venv                 # or reuse an existing venv with the root requirements installed
 source .venv/bin/activate            # Windows: .venv\Scripts\activate
 pip install -r backend/requirements.txt
-uvicorn backend.app.main:app --reload
+ALLOWED_ORIGIN=http://localhost:5173 uvicorn backend.app.main:app --reload
 ```
 
-Serves on `http://localhost:8000` by default. `ALLOWED_ORIGIN` defaults to
-`https://rd.beam-stack.com` when unset, so for local dev set it explicitly, e.g.
-`ALLOWED_ORIGIN=http://localhost:5173 uvicorn backend.app.main:app --reload`.
+Serves on `http://localhost:8000`. Unset, `ALLOWED_ORIGIN` defaults to `https://rd.beam-stack.com` and
+refuses every other origin, so local dev sets it to the Vite dev server's origin.
 
 Interactive API docs: `http://localhost:8000/docs` (FastAPI's built-in Swagger UI).
 
@@ -97,7 +96,7 @@ repoint `VITE_API_BASE_URL` on Cloudflare Pages, re-set `ALLOWED_ORIGIN`.
 
 | Where | Name | Set to |
 |---|---|---|
-| Backend host (HF: Space Variables; Cloud Run if promoted later: `--set-env-vars`) | `ALLOWED_ORIGIN` | The deployed Cloudflare Pages origin, e.g. `https://road-designer.pages.dev` |
+| Backend host (HF: Space Variables; Cloud Run if promoted later: `--set-env-vars`) | `ALLOWED_ORIGIN` | The SPA's origin `https://rd.beam-stack.com` (the default when unset); comma-add the `*.pages.dev` URL only to also allow the Cloudflare fallback |
 | Cloudflare Pages dashboard | `VITE_API_BASE_URL` | The backend's public URL, no trailing slash (see `frontends/react/README.md`) |
 | GitHub repo secret (optional, recommended) | `BACKEND_HEALTH_URL` | `https://<space>.hf.space/health` — used by `.github/workflows/keep-alive-backend.yml` to stop the current HF Space from sleeping; free to run there. **Not** for a Cloud Run deployment with `--no-cpu-throttling`. |
 

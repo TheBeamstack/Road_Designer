@@ -9,7 +9,7 @@ A step-by-step, no-assumed-experience guide to getting all three Road Designer s
 |---|---|---|
 | **Streamlit app** | Streamlit Community Cloud (free) | Always-on, standalone. The fallback that never needs a backend. |
 | **FastAPI backend** | **Hugging Face Spaces** (Docker, PRO plan) — **current solution** | The API the React SPA calls. Portable — can be *promoted* to Google Cloud Run later ([Part G](#12-part-g--promoting-the-backend-to-google-cloud-run-later)) if usage outgrows a single flat-rate Space. |
-| **React SPA** | Cloudflare Pages (free), served at **`road-designer.beam-stack.com`** | The "product" frontend. Talks to the backend over HTTPS. |
+| **React SPA** | Cloudflare Pages (free), served at **`rd.beam-stack.com`** | The "product" frontend. Talks to the backend over HTTPS. |
 
 Written for someone doing this for the first time — every click is spelled out. If you get
 stuck partway through, jump to [Troubleshooting](#10-troubleshooting), or ask for help with
@@ -290,23 +290,24 @@ Changing it does nothing until the next build.
 
 ### B.4 — Get your URL
 
-The finished deploy gives you `https://road-designer.pages.dev`. Open it — the UI loads, but
-submitting a design fails with a CORS error until Part C. That's expected.
+The finished deploy gives you `https://road-designer.pages.dev`, the Cloudflare fallback URL. Open it —
+the UI loads, but submitting a design fails with a CORS error: the backend allows only the SPA's origin
+from B.5. That's expected.
 
 ### B.5 — Add the custom domain
 
-You'll serve the SPA from **`road-designer.beam-stack.com`**, not the `*.pages.dev` URL.
+You'll serve the SPA from **`rd.beam-stack.com`**, not the `*.pages.dev` fallback.
 
-1. Pages project → **Custom domains** → **Set up a domain** → enter `road-designer.beam-stack.com`
+1. Pages project → **Custom domains** → **Set up a domain** → enter `rd.beam-stack.com`
    → **Continue**.
 2. If `beam-stack.com` is already managed in this same Cloudflare account, Cloudflare adds the
    DNS record for you — click **Activate domain**. If the domain's DNS lives elsewhere,
-   Cloudflare shows a `CNAME` (`road-designer` → `your-project.pages.dev`) to add at your DNS
+   Cloudflare shows a `CNAME` (`rd` → `your-project.pages.dev`) to add at your DNS
    provider.
 3. Wait for the status to read **Active** (a minute or two; TLS certificate is automatic).
 
-`road-designer.beam-stack.com` is now the SPA's canonical URL. The `*.pages.dev` URL keeps
-working — decide in Part C whether to allow it in CORS too.
+`rd.beam-stack.com` is now the SPA's origin. The `*.pages.dev` fallback keeps serving the UI —
+decide in Part C whether to allow it in CORS too.
 
 ### B.6 — Check the "Powered by Beamstack" credit is visible
 
@@ -320,22 +321,21 @@ applies to any fork or third-party deployment too, not just yours.
 
 ## 5. Part C — Close the loop: lock down CORS
 
-Unset, `ALLOWED_ORIGIN` defaults to `https://rd.beam-stack.com` and refuses every other origin. Point it at your
-SPA's real origin — the custom domain from B.5:
+Unset, `ALLOWED_ORIGIN` defaults to `https://rd.beam-stack.com` — the SPA's origin from B.5 — and refuses
+every other origin, so the SPA can submit designs with no variable set. Set it explicitly anyway, so the
+Space's settings show what it allows:
 
 1. Go to your Space → **Settings** → **Variables and secrets** → **New variable**.
 2. **Name**: `ALLOWED_ORIGIN`
-   **Value**: `https://road-designer.beam-stack.com`
+   **Value**: `https://rd.beam-stack.com`
 3. Save. The Space rebuilds/restarts with the new variable in a minute or so.
 
 To also allow the `*.pages.dev` fallback (and Cloudflare preview builds), comma-separate the
 origins — no spaces, no trailing slashes:
 
 ```
-https://road-designer.beam-stack.com,https://road-designer.pages.dev
+https://rd.beam-stack.com,https://road-designer.pages.dev
 ```
-
-The React app at `road-designer.beam-stack.com` can now submit designs.
 
 ---
 
@@ -396,15 +396,22 @@ the keep-alive ping is the only one that guarantees no cold starts.
 
 ## 8. Part F — Final end-to-end check
 
-1. Open `https://road-designer.beam-stack.com`.
-2. Fill the form — an axe file, a terrain CSV (or the synthetic-terrain option), a REFT
+1. Confirm CORS is locked — the first request must print an `access-control-allow-origin` line, the
+   second must print nothing (replace `YOUR-SPACE-URL` as in A.7):
+
+   ```bash
+   curl -si -H "Origin: https://rd.beam-stack.com" https://YOUR-SPACE-URL/health | grep -i '^access-control-allow-origin'
+   curl -si -H "Origin: https://evil.example" https://YOUR-SPACE-URL/health | grep -i '^access-control-allow-origin'
+   ```
+2. Open `https://rd.beam-stack.com`.
+3. Fill the form — an axe file, a terrain CSV (or the synthetic-terrain option), a REFT
    category, and a **company name** (required — submit stays disabled without it).
-3. Submit; watch the job go `queued → running → done` (if the Space had gone to sleep, the first
+4. Submit; watch the job go `queued → running → done` (if the Space had gone to sleep, the first
    submit eats a cold start — give it up to a minute).
-4. Download all 4 files (DXF, XLSX, both PDFs); confirm they open.
-5. Check the preview tabs (profil en long / Bruckner / tracé en plan) render.
-6. Separately, open your Streamlit Cloud URL and confirm it loads and generates a design.
-7. Confirm "Powered by Beamstack" is visible on both the SPA and the Streamlit app.
+5. Download all 4 files (DXF, XLSX, both PDFs); confirm they open.
+6. Check the preview tabs (profil en long / Bruckner / tracé en plan) render.
+7. Separately, open your Streamlit Cloud URL and confirm it loads and generates a design.
+8. Confirm "Powered by Beamstack" is visible on both the SPA and the Streamlit app.
 
 ---
 
@@ -445,7 +452,7 @@ reasonable follow-up if this becomes a chore — not set up here to keep the fir
 | `git push` to the Space asks for credentials and rejects them | Used your HF account password instead of a token, or the token has read-only scope | Recheck A.3 — generate a **Write** token and use it as the password |
 | Space stuck on "Building" or fails the build | A file is missing from the assembled push (e.g. forgot `backend/requirements.txt`) | Check the Space's **Logs** tab for the exact pip/Docker error; recheck A.5's file list |
 | Space shows "Runtime error" after building | Usually an import error or missing env var at startup | **Logs** tab shows the traceback; test the same image locally first with `docker build -t road-designer-api . && docker run --rm -p 8000:7860 road-designer-api` |
-| Browser console shows a CORS error when submitting | `ALLOWED_ORIGIN` doesn't match the Pages URL exactly | Recheck Part C — no trailing slash, exact `https://`, exact hostname |
+| Browser console shows a CORS error when submitting | `ALLOWED_ORIGIN` doesn't match the SPA's origin exactly | Recheck Part C — no trailing slash, exact `https://`, exact hostname |
 | Every API call from the SPA hits `localhost` or 404s | `VITE_API_BASE_URL` wasn't set before the last build, or has a typo | Recheck B.3, then trigger a fresh Cloudflare Pages build — it's baked in at build time |
 | First request after a while takes ~10–30 s | The Space went to sleep (48 h idle on `CPU Basic`) | Expected if you skipped the keep-alive ping (Part E). Set `BACKEND_HEALTH_URL` to avoid it. |
 | Job seems slow on big inputs | 100+ page cross-section PDFs take real time to render | Give it a minute; check the Space's **Logs** tab for progress |
@@ -545,7 +552,7 @@ The build takes a few minutes. When it finishes, gcloud prints a **Service URL**
 
 1. `https://YOUR-SERVICE-URL/health` and `/docs` should respond, same as A.7.
 2. Update CORS: `gcloud run services update road-designer-api --region europe-west1
-   --update-env-vars ALLOWED_ORIGIN=https://road-designer.beam-stack.com` (same value as
+   --update-env-vars ALLOWED_ORIGIN=https://rd.beam-stack.com` (same value as
    Part C).
 3. **Cloudflare Pages → Settings → Environment variables**: change `VITE_API_BASE_URL` to the
    Cloud Run Service URL, then **Retry deployment**.

@@ -719,7 +719,7 @@ redeployed, or taken down without affecting the others:
 | Surface | Code | Hosting | URL |
 |---|---|---|---|
 | Streamlit app | `frontends/streamlit/app.py` | Streamlit Community Cloud (always-on fallback) | TODO(user): fill in after first real deploy |
-| React SPA | `frontends/react/` | Cloudflare Pages (static build), custom domain `road-designer.beam-stack.com` | TODO(user): confirm after first real deploy |
+| React SPA | `frontends/react/` | Cloudflare Pages (static build), custom domain `rd.beam-stack.com` | TODO(user): confirm after first real deploy |
 | FastAPI service | `backend/` | **Hugging Face Spaces** (Docker SDK, `CPU Basic` hardware — needs a **PRO** account to create, hardware itself is $0/hour) — **current host**. Google Cloud Run is the documented later-promotion path (§ 15 Part G / `DEPLOYMENT.md` Part G) if usage ever outgrows a single flat-rate Space. | TODO(user): fill in after first real deploy |
 
 ```
@@ -874,7 +874,7 @@ docker run --rm -v "//c/path/to/Road_designe/tests:/app/tests:ro" \
 
 | Where | Name | Set to |
 |---|---|---|
-| HF Space Variables (Settings → Variables and secrets) | `ALLOWED_ORIGIN` | The SPA's origin — the custom domain `https://road-designer.beam-stack.com` (comma-add `https://road-designer.pages.dev` to keep the fallback) |
+| HF Space Variables (Settings → Variables and secrets) | `ALLOWED_ORIGIN` | The SPA's origin `https://rd.beam-stack.com` (the default when unset); comma-add `https://road-designer.pages.dev` only to also allow the Cloudflare fallback |
 | Cloudflare Pages dashboard | `VITE_API_BASE_URL` | The deployed backend URL — an HF Space `https://<user>-<space>.hf.space` (current), or a Cloud Run URL `https://…run.app` if later promoted (§ 15 Part G) |
 | GitHub repo secret (optional, recommended) | `BACKEND_HEALTH_URL` | `https://<space>.hf.space/health` — keeps the HF Space from sleeping, free to run there; **not** for a Cloud Run deployment with `--no-cpu-throttling` |
 | Streamlit Cloud dashboard | "Main file path" setting | `frontends/streamlit/app.py` (must be updated manually post-move — cannot be set from the repo; this is the fix if the Streamlit app currently doesn't load) |
