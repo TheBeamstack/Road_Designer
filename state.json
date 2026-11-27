@@ -3,7 +3,7 @@
  "discovered": [],
  "lane": "Road_Designer",
  "layout": [],
- "next_id": 2,
+ "next_id": 3,
  "parked": [],
  "rows": {
   "T-001": {
@@ -27,6 +27,33 @@
     "outcome": "backend/app/main.py defaults ALLOWED_ORIGIN to https://rd.beam-stack.com instead of *, so an unset variable fails closed; local dev sets it explicitly",
     "risk": "normal",
     "title": "The backend answers CORS only for https://rd.beam-stack.com unless ALLOWED_ORIGIN says otherwise",
+    "verify": "bash scripts/verify.sh"
+   },
+   "status": "ready"
+  },
+  "T-002": {
+   "approved": "",
+   "blockers": [],
+   "branch": "",
+   "holder": "",
+   "pr": 0,
+   "spec": {
+    "area": "spec",
+    "depends_on": "T-001",
+    "done_when": [
+     "git grep -n 'road-designer.beam-stack.com' -- . ':!docs/MILESTONES.toml' prints nothing",
+     "every remaining pages.dev mention is described as the Cloudflare fallback, not as the SPA's origin or an ALLOWED_ORIGIN value",
+     "DEPLOYMENT.md Part F opens https://rd.beam-stack.com and has a curl step showing a request with Origin: https://rd.beam-stack.com gets access-control-allow-origin and one with another Origin gets none",
+     "the local-dev instructions in CLAUDE.md, docs/INVARIANTS.md and backend/README.md set ALLOWED_ORIGIN for localhost, since the default no longer allows it",
+     "CLAUDE.md and docs/INVARIANTS.md carry the same text for every section this task edits",
+     "bash scripts/verify.sh is green"
+    ],
+    "implements": "docs/INVARIANTS.md §15 (Env vars / secrets table, backend/ CORS bullet); DEPLOYMENT.md Part C and Part F (§8)",
+    "machine": "any",
+    "milestone": "M-roaddesigner-01",
+    "outcome": "README.md, README.fr.md, DEPLOYMENT.md, CLAUDE.md, docs/INVARIANTS.md, backend/README.md, frontends/react/README.md and frontends/react/.env.example name https://rd.beam-stack.com where they named road-designer.beam-stack.com or a pages.dev origin, and describe the T-001 CORS default",
+    "risk": "normal",
+    "title": "Every doc names rd.beam-stack.com as the SPA's origin, and DEPLOYMENT.md Part F proves CORS is locked",
     "verify": "bash scripts/verify.sh"
    },
    "status": "ready"

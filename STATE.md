@@ -16,7 +16,7 @@ none
 
 ## BLOCKED
 
-none
+- T-002 — depends on T-001 (ready)
 
 ## Open blockers
 
