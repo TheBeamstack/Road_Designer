@@ -16,3 +16,19 @@
 - ANSWER: hold
 - free-text: both permissions (B-20261127-07, B-20261127-08) are granted by the owner 2026-11-27; V1.0.0 first
 - answered: 2026-11-27T13:04Z
+
+## D-20261127-02 V1.0.0's rows are done: start building V1.0.1 (M-roaddesigner-03)
+- opened: 2026-11-27T21:39Z
+- by: brahim
+- item: M-roaddesigner-03
+- asks: whether the lane starts building M-roaddesigner-03 (English UI, consent banner, privacy notice, newsletter ask) while V1.0.0 waits only on your checks and its tag
+- context: Every V1.0.0 row (T-001 to T-008) is merged; what remains is your owner checks in M-roaddesigner-01 and -02 and the v1.0.0 tag, which no box seat can do.
+    PR #22 writes the V1.0.1 spec (CLAUDE.md and docs/INVARIANTS.md section 16); two choices in it are mine: the run count stays in the visitor's browser and is never sent to a server, and the newsletter ask shows at most once per browser.
+    continue: once PR #22 merges, the steward cuts about 8 rows from section 16 and builders start; all banner, ask and privacy wording ships marked TO-CONFIRM for your approval.
+    hold: the lane builds nothing until you finish the V1.0.0 checks.
+- options: continue | hold
+- default-if-silent: continue
+- expires: 2026-12-03
+- directions-read: none in force
+- ANSWER:
+- answered: -
