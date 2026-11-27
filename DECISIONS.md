@@ -15,4 +15,4 @@
 - directions-read: none in force
 - ANSWER: hold
 - free-text: both permissions (B-20261127-07, B-20261127-08) are granted by the owner 2026-11-27; V1.0.0 first
-- answered: -
+- answered: 2026-11-27T13:04Z
