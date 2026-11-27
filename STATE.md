@@ -1,10 +1,10 @@
 # STATE — Road_Designer, rendered from `state.json` by scripts/state.py; never edited by hand
 
-next: builder (any) — T-001
+next: blocked: depends on T-001 (claimed) — T-002
 
 ## Claims
 
-none
+- T-001 zayd on task/T-001-the-backend-answers-cors-only-for-https
 
 ## Review
 
@@ -16,7 +16,7 @@ none
 
 ## BLOCKED
 
-- T-002 — depends on T-001 (ready)
+- T-002 — depends on T-001 (claimed)
 - T-003 — depends on T-002 (ready)
 
 ## Open blockers
