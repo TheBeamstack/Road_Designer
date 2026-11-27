@@ -279,6 +279,7 @@ Three preset constants:
 - Builds a Delaunay TIN with `scipy.interpolate.LinearNDInterpolator`.
 - Builds a `scipy.spatial.cKDTree` for nearest-neighbour fallback.
 - `query_z(x, y)` returns the TIN-interpolated Z, falling back to NN with a one-time warning per out-of-hull query.
+- `query_z_many(xs, ys)` is the vectorised form, identical point by point; `RoadDesign` uses it for vertex and dense TN.
 - `bounds` returns the point-cloud envelope.
 
 ### `road_designer/axe_parser.py` (≈ 230 lines)
@@ -322,7 +323,7 @@ The orchestrator. `RoadDesign(terrain_csv, axe_txt, cfg)`:
 `build_design(cfg, axe_path, terrain_path, out_dir)`:
 - Validates `cfg.cartouche.company_name` is non-empty (raises `ValueError` otherwise).
 - Builds the design.
-- Computes cross-sections with `all_sections(design)` (Step 7).
+- Computes cross-sections with `all_sections(design)` (Step 7), once: `write_dxf` and the PT PDF reuse `design.sections`.
 - Computes cubatures with `compute_cubatures(design)` — automatically uses the polygon-true areas (Step 7b) because `design.section_areas` is now populated.
 - Writes DXF, XLSX, plan PDF, PT PDF.
 - Returns `{dxf, xlsx, pdf_plan, pdf_pt, warnings}`.

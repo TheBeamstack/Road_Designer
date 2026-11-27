@@ -44,6 +44,21 @@ class TerrainModel:
             )
         return float(z)
 
+    def query_z_many(self, xs, ys) -> np.ndarray:
+        """Vectorised ``query_z``: same values, same per-point fallback and
+        warning, in one interpolator call."""
+        xs = np.asarray(xs, dtype=float)
+        ys = np.asarray(ys, dtype=float)
+        z = np.asarray(self.interpolator(xs, ys), dtype=float).copy()
+        for i in np.flatnonzero(np.isnan(z)):
+            dist, idx = self.tree.query([xs[i], ys[i]])
+            z[i] = self.z[idx]
+            print(
+                f"Warning: ({xs[i]:.3f}, {ys[i]:.3f}) outside terrain hull, "
+                f"using nearest Z={z[i]:.3f} (d={dist:.2f} m)"
+            )
+        return z
+
     @property
     def bounds(self):
         """(xmin, ymin, xmax, ymax) of the terrain point cloud."""
