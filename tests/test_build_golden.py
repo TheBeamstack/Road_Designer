@@ -29,6 +29,12 @@ def test_build_design_matches_golden(axe_path, terrain_path, tmp_path):
     cfg.cartouche.company_name = "Golden"
     d = build_design(cfg, axe_path, terrain_path, tmp_path,
                      return_design=True)["design"]
-    np.testing.assert_allclose(d.cubatures.total_deb, GOLDEN_TOTAL_DEB, rtol=1e-9)
-    np.testing.assert_allclose(d.cubatures.total_rem, GOLDEN_TOTAL_REM, rtol=1e-9)
-    np.testing.assert_allclose(d.v_align.pvi, GOLDEN_PVI, rtol=1e-9)
+    # Main itself differs by rel 5.0e-4 in Σ and up to 9e-4 m in PVI Z between x86_64 and
+    # aarch64 (B-20261127-10): SLSQP on Σ|Δz| amplifies ULP-level differences.
+    np.testing.assert_allclose(d.cubatures.total_deb, GOLDEN_TOTAL_DEB, rtol=5e-3)
+    np.testing.assert_allclose(d.cubatures.total_rem, GOLDEN_TOTAL_REM, rtol=5e-3)
+    pvi = np.asarray(d.v_align.pvi, dtype=float)
+    golden = np.asarray(GOLDEN_PVI)
+    assert pvi.shape == golden.shape
+    np.testing.assert_allclose(pvi[:, 0], golden[:, 0], rtol=0, atol=1e-6)
+    np.testing.assert_allclose(pvi[:, 1], golden[:, 1], rtol=0, atol=0.01)
