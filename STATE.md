@@ -1,10 +1,10 @@
 # STATE — Road_Designer, rendered from `state.json` by scripts/state.py; never edited by hand
 
-next: builder (any) — T-004
+next: blocked: depends on T-004 (claimed) — T-005
 
 ## Claims
 
-none
+- T-004 zayd on task/T-004-a-running-design-job-reports-its-current
 
 ## Review
 
@@ -16,10 +16,10 @@ none
 
 ## BLOCKED
 
-- T-005 — depends on T-004 (ready)
-- T-006 — depends on T-004 (ready)
+- T-005 — depends on T-004 (claimed)
+- T-006 — depends on T-004 (claimed)
 - T-007 — depends on T-006 (ready)
-- T-008 — depends on T-004 (ready)
+- T-008 — depends on T-004 (claimed)
 
 ## Open blockers
 

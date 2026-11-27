@@ -150,8 +150,8 @@
   "T-004": {
    "approved": "",
    "blockers": [],
-   "branch": "",
-   "holder": "",
+   "branch": "task/T-004-a-running-design-job-reports-its-current",
+   "holder": "zayd",
    "pr": 0,
    "spec": {
     "area": "backend",
@@ -171,7 +171,7 @@
     "title": "A running design job reports its current stage and, while PDFs render, its page counter",
     "verify": "bash scripts/verify.sh"
    },
-   "status": "ready"
+   "status": "claimed"
   },
   "T-005": {
    "approved": "",
