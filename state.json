@@ -49,6 +49,16 @@
    "opened": "2026-11-27T00:52Z",
    "scope": "item",
    "title": "stop rule: lane roaddesigner, refused twice by agent_start.py: the seat registry docs/seats/README.md is missing."
+  },
+  "B-20261127-06": {
+   "by": "hmdnah",
+   "cleared": "-",
+   "item": "PR#11",
+   "key": "vite8-plugin-react-peer",
+   "need": "steward: close PR #11 and sequence one task that bumps vite to 8 together with a @vitejs/plugin-react release whose peer range includes vite 8",
+   "opened": "2026-11-27T01:13Z",
+   "scope": "item",
+   "title": "PR #11 vite 8.4.0 fails npm ci: @vitejs/plugin-react@4.7.0 peers vite <=7"
   }
  },
  "discovered": [],
