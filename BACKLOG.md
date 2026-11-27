@@ -10,6 +10,7 @@
 | T-004 | ready | A running design job reports its current stage and, while PDFs render, its page counter | backend | any | normal | — |
 | T-005 | blocked | The SPA shows the running job's stage and PDF page counter | frontend | any | normal | T-004 |
 | T-006 | blocked | build_design on the samples runs faster with unchanged outputs: no second cross-section pass, vectorised TN queries | backend | any | normal | T-004 |
+| T-007 | blocked | The ligne-rouge optimiser evaluates its objective vectorised, so SLSQP finishes faster | backend | any | normal | T-006 |
 
 ### T-001 — The backend answers CORS only for https://rd.beam-stack.com unless ALLOWED_ORIGIN says otherwise
 - outcome: backend/app/main.py defaults ALLOWED_ORIGIN to https://rd.beam-stack.com instead of *, so an unset variable fails closed; local dev sets it explicitly
@@ -81,6 +82,18 @@
 - done-when: bash scripts/verify.sh is green
 - verify: bash scripts/verify.sh
 - depends-on: T-004 · area: backend · machine: any · risk: normal
+- milestone: M-roaddesigner-02
+
+### T-007 — The ligne-rouge optimiser evaluates its objective vectorised, so SLSQP finishes faster
+- outcome: RoadDesign._objective evaluates the sum of |Z_projet - Z_TN| over the dense PK grid with a vectorised VerticalAlignment evaluation instead of a Python loop of get_z calls
+- implements: docs/INVARIANTS.md §7.1 (PVI optimisation) and §7.2 (parabolic vertical curve)
+- done-when: VerticalAlignment offers a vectorised z evaluation over an array of PKs that equals get_z point by point within 1e-9 m on the samples, pinned by a test
+- done-when: _objective uses it, and the three SLSQP constraints and maxiter are unchanged
+- done-when: on the samples every PVI elevation is within 0.01 m of the values T-006 pinned and Σ Déblai and Σ Remblai within 0.5 %, and the pinning test is updated only within those tolerances
+- done-when: the PR body gives python3 scripts/bench_build.py's output on main and on the branch, measured on the same machine, and the branch's is lower
+- done-when: bash scripts/verify.sh is green
+- verify: bash scripts/verify.sh
+- depends-on: T-006 · area: backend · machine: any · risk: normal
 - milestone: M-roaddesigner-02
 
 ## Discovered

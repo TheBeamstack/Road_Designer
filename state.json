@@ -64,7 +64,7 @@
  "discovered": [],
  "lane": "Road_Designer",
  "layout": [],
- "next_id": 7,
+ "next_id": 8,
  "parked": [
   "- 2026-11-27 The React app builds on tailwindcss 4 — frontends/react uses tailwindcss 4 with @tailwindcss/postcss, its postcss.config.js and tailwind config migrated, and the UI renders as before · implements: docs/INVARIANTS.md §15 frontends/react/ — Vite + React + TypeScript + Tailwind",
   "- 2026-11-27 The React app builds on vite 8 with a vite-8-compatible @vitejs/plugin-react — frontends/react pins vite 8.x and an @vitejs/plugin-react whose peer range includes it, in one lockfile, and the build output is unchanged in shape · implements: docs/INVARIANTS.md §15 frontends/react/ — Vite + React + TypeScript + Tailwind"
@@ -220,6 +220,32 @@
     "outcome": "write_dxf reuses the sections build_design computed instead of calling all_sections again, and RoadDesign queries TN for its vertices and dense samples in one vectorised call each",
     "risk": "normal",
     "title": "build_design on the samples runs faster with unchanged outputs: no second cross-section pass, vectorised TN queries",
+    "verify": "bash scripts/verify.sh"
+   },
+   "status": "ready"
+  },
+  "T-007": {
+   "approved": "",
+   "blockers": [],
+   "branch": "",
+   "holder": "",
+   "pr": 0,
+   "spec": {
+    "area": "backend",
+    "depends_on": "T-006",
+    "done_when": [
+     "VerticalAlignment offers a vectorised z evaluation over an array of PKs that equals get_z point by point within 1e-9 m on the samples, pinned by a test",
+     "_objective uses it, and the three SLSQP constraints and maxiter are unchanged",
+     "on the samples every PVI elevation is within 0.01 m of the values T-006 pinned and Σ Déblai and Σ Remblai within 0.5 %, and the pinning test is updated only within those tolerances",
+     "the PR body gives python3 scripts/bench_build.py's output on main and on the branch, measured on the same machine, and the branch's is lower",
+     "bash scripts/verify.sh is green"
+    ],
+    "implements": "docs/INVARIANTS.md §7.1 (PVI optimisation) and §7.2 (parabolic vertical curve)",
+    "machine": "any",
+    "milestone": "M-roaddesigner-02",
+    "outcome": "RoadDesign._objective evaluates the sum of |Z_projet - Z_TN| over the dense PK grid with a vectorised VerticalAlignment evaluation instead of a Python loop of get_z calls",
+    "risk": "normal",
+    "title": "The ligne-rouge optimiser evaluates its objective vectorised, so SLSQP finishes faster",
     "verify": "bash scripts/verify.sh"
    },
    "status": "ready"
