@@ -1,10 +1,10 @@
 # STATE — Road_Designer, rendered from `state.json` by scripts/state.py; never edited by hand
 
-next: builder (any) — T-005
+next: builder (any) — T-006
 
 ## Claims
 
-none
+- T-005 zayd on task/T-005-the-spa-shows-the-running-job-s-stage-an
 
 ## Review
 

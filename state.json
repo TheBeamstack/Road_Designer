@@ -188,8 +188,8 @@
   "T-005": {
    "approved": "",
    "blockers": [],
-   "branch": "",
-   "holder": "",
+   "branch": "task/T-005-the-spa-shows-the-running-job-s-stage-an",
+   "holder": "zayd",
    "pr": 0,
    "spec": {
     "area": "frontend",
@@ -208,7 +208,7 @@
     "title": "The SPA shows the running job's stage and PDF page counter",
     "verify": "bash scripts/verify.sh"
    },
-   "status": "ready"
+   "status": "claimed"
   },
   "T-006": {
    "approved": "",
