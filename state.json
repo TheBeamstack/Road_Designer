@@ -171,7 +171,7 @@
     "title": "A running design job reports its current stage and, while PDFs render, its page counter",
     "verify": "bash scripts/verify.sh"
    },
-   "status": "review"
+   "status": "done"
   },
   "T-005": {
    "approved": "",
