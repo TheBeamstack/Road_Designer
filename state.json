@@ -62,6 +62,18 @@
   }
  },
  "discovered": [],
+ "found": [
+  {
+   "at": "2026-11-27T03:20Z",
+   "by": "hmdnah",
+   "harm": "none",
+   "id": "disc:1",
+   "main": "6f286d4e7d03ed687aaa359a6759fc447c9a9d19",
+   "status": "parked",
+   "text": "preview.py docstring still calls return_design the one additive engine hook; T-004 added progress as a second",
+   "where": "backend/app/routers/preview.py:9"
+  }
+ ],
  "lane": "Road_Designer",
  "layout": [],
  "next_id": 9,

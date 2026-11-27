@@ -111,6 +111,7 @@
 
 ## Discovered
 
+- 2026-11-27 disc:1 parked backend/app/routers/preview.py:9 — preview.py docstring still calls return_design the one additive engine hook; T-004 added progress as a second (harm: none, by hmdnah)
 
 ## Parked
 
