@@ -139,6 +139,25 @@ class VerticalAlignment:
 
         return float(self.pvi[-1, 1])
 
+    def get_z_array(self, pks) -> np.ndarray:
+        """``get_z`` over an array of PKs, same precedence: clamp, first curve, tangent."""
+        pks = np.asarray(pks, dtype=float)
+        pvi_pk, pvi_z = self.pvi[:, 0], self.pvi[:, 1]
+        # Tangents: get_z takes the first segment i with pvi[i] <= pk <= pvi[i+1].
+        seg = np.clip(np.searchsorted(pvi_pk, pks, side="left") - 1,
+                      0, len(pvi_pk) - 2)
+        z = pvi_z[seg] + np.asarray(self.grades)[seg] * (pks - pvi_pk[seg])
+        # Curves in reverse so the first matching curve is written last, as get_z picks it.
+        for c in reversed(self.curves):
+            m = (pks >= c["start"]) & (pks <= c["end"])
+            x = pks[m] - c["start"]
+            g1, g2, L = c["g1"], self.grades[c["pvi_idx"]], c["L"]
+            y_pvc = pvi_z[c["pvi_idx"]] - (g1 * (L / 2.0))
+            z[m] = y_pvc + (g1 * x) + ((g2 - g1) / (2 * L)) * (x ** 2)
+        z[pks <= pvi_pk[0]] = pvi_z[0]
+        z[pks >= pvi_pk[-1]] = pvi_z[-1]
+        return z
+
     def check_curve_overlap(self, min_straight_tangent: float = 0.0) -> List[str]:
         """Return a list of warnings if two adjacent curves leave less than
         ``min_straight_tangent`` of actual straight between them (C6)."""
