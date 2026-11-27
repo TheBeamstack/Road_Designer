@@ -32,7 +32,7 @@
   },
   "B-20261127-04": {
    "by": "hmdnah",
-   "cleared": "-",
+   "cleared": "2026-11-27T02:04Z",
    "item": "PR#5",
    "key": "deps-5-stale-base",
    "need": "steward: have Dependabot rebase PR #5 onto main, then route it back to hmdnah",
