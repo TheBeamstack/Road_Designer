@@ -18,9 +18,9 @@ pip install -r backend/requirements.txt
 uvicorn backend.app.main:app --reload
 ```
 
-Serves on `http://localhost:8000` by default. `ALLOWED_ORIGIN` defaults to `"*"` when unset —
-fine for local dev, but **must** be set to the real Cloudflare Pages origin before/at first
-production deploy (see the env var table below).
+Serves on `http://localhost:8000` by default. `ALLOWED_ORIGIN` defaults to
+`https://rd.beam-stack.com` when unset, so for local dev set it explicitly, e.g.
+`ALLOWED_ORIGIN=http://localhost:5173 uvicorn backend.app.main:app --reload`.
 
 Interactive API docs: `http://localhost:8000/docs` (FastAPI's built-in Swagger UI).
 
