@@ -777,19 +777,15 @@ PT_PAGE_H_MM = 297.0
 def _draw_cross_sections(doc, design: "RoadDesign"):
     """Build one A4 paperspace layout per cross-section.
 
-    Lazy import to keep ``dxf_export`` usable even before Step 7 lands.
+    Reuses ``design.sections`` when ``build_design`` already computed them;
+    ``design.section_areas`` (the cubature input) is never touched here.
     """
-    from .cross_section import all_sections
-
-    sections = all_sections(design)
+    sections = getattr(design, "sections", None)
+    if not sections:
+        from .cross_section import all_sections
+        sections = all_sections(design)
     if not sections:
         return
-
-    # Attach cut/fill areas back onto the design so Step 7b can swap them
-    # into cubature.py without changing call sites.
-    design.section_areas = {
-        s.pk: (s.cut_area, s.fill_area) for s in sections
-    }
 
     for k, sec in enumerate(sections, start=1):
         name = f"PT_{k:03d}"
