@@ -1,14 +1,14 @@
 # STATE — Road_Designer, rendered from `state.json` by scripts/state.py; never edited by hand
 
-next: nothing
+next: reviewer (any): PR #21 — T-007
 
 ## Claims
 
-- T-007 zayd on task/T-007-the-ligne-rouge-optimiser-evaluates-its
+none
 
 ## Review
 
-none
+- T-007 PR #21 by zayd — reviewer (any): PR #21
 
 ## Awaiting approval (R93)
 
