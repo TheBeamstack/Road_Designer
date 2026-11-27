@@ -9,6 +9,7 @@
 | T-003 | done | The Streamlit surface is declared frozen and points its users at rd.beam-stack.com | frontend | any | normal | T-002 |
 | T-004 | ready | A running design job reports its current stage and, while PDFs render, its page counter | backend | any | normal | — |
 | T-005 | blocked | The SPA shows the running job's stage and PDF page counter | frontend | any | normal | T-004 |
+| T-006 | blocked | build_design on the samples runs faster with unchanged outputs: no second cross-section pass, vectorised TN queries | backend | any | normal | T-004 |
 
 ### T-001 — The backend answers CORS only for https://rd.beam-stack.com unless ALLOWED_ORIGIN says otherwise
 - outcome: backend/app/main.py defaults ALLOWED_ORIGIN to https://rd.beam-stack.com instead of *, so an unset variable fails closed; local dev sets it explicitly
@@ -68,6 +69,18 @@
 - done-when: bash scripts/verify.sh is green, including the React build
 - verify: bash scripts/verify.sh
 - depends-on: T-004 · area: frontend · machine: any · risk: normal
+- milestone: M-roaddesigner-02
+
+### T-006 — build_design on the samples runs faster with unchanged outputs: no second cross-section pass, vectorised TN queries
+- outcome: write_dxf reuses the sections build_design computed instead of calling all_sections again, and RoadDesign queries TN for its vertices and dense samples in one vectorised call each
+- implements: docs/INVARIANTS.md §4 (data flow), §5 (mnt_engine.py, cross_section.py, dxf_export.py) and §7.3 (cubature run order)
+- done-when: dxf_export.py no longer calls all_sections when the design already carries the sections build_design computed, and no longer overwrites design.section_areas
+- done-when: TerrainModel offers a vectorised query that returns the same values as query_z point by point, with the same nearest-neighbour fallback and one-time warning outside the hull, pinned by a test comparing both on the samples
+- done-when: a test pins Σ Déblai, Σ Remblai and the PVI elevations of build_design on the samples to the values main gives before this change, within 1e-9 relative
+- done-when: a committed script scripts/bench_build.py prints build_design's wall time on the samples, and the PR body gives its output on main and on the branch, measured on the same machine
+- done-when: bash scripts/verify.sh is green
+- verify: bash scripts/verify.sh
+- depends-on: T-004 · area: backend · machine: any · risk: normal
 - milestone: M-roaddesigner-02
 
 ## Discovered
