@@ -4,11 +4,11 @@ next: builder (any) — T-006
 
 ## Claims
 
-- T-005 zayd on task/T-005-the-spa-shows-the-running-job-s-stage-an
+none
 
 ## Review
 
-none
+- T-005 PR #16 by zayd — reviewer (any): PR #16
 
 ## Awaiting approval (R93)
 
