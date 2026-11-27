@@ -3,8 +3,34 @@
  "discovered": [],
  "lane": "Road_Designer",
  "layout": [],
- "next_id": 1,
+ "next_id": 2,
  "parked": [],
- "rows": {},
+ "rows": {
+  "T-001": {
+   "approved": "",
+   "blockers": [],
+   "branch": "",
+   "holder": "",
+   "pr": 0,
+   "spec": {
+    "area": "backend",
+    "done_when": [
+     "with ALLOWED_ORIGIN unset, a GET /health carrying Origin: https://rd.beam-stack.com gets access-control-allow-origin: https://rd.beam-stack.com, pinned by a test in backend/tests/",
+     "with ALLOWED_ORIGIN unset, a GET /health and an OPTIONS preflight carrying Origin: https://evil.example get no access-control-allow-origin header, pinned by a test in backend/tests/",
+     "with ALLOWED_ORIGIN='https://a.example,https://b.example' both origins are allowed and a third is not, pinned by a test in backend/tests/",
+     "the TODO(user) comment and module docstring in backend/app/main.py name the new default and no longer say the default is *",
+     "bash scripts/verify.sh is green"
+    ],
+    "implements": "docs/INVARIANTS.md §15 backend/ — FastAPI service (the CORS bullet)",
+    "machine": "any",
+    "milestone": "M-roaddesigner-01",
+    "outcome": "backend/app/main.py defaults ALLOWED_ORIGIN to https://rd.beam-stack.com instead of *, so an unset variable fails closed; local dev sets it explicitly",
+    "risk": "normal",
+    "title": "The backend answers CORS only for https://rd.beam-stack.com unless ALLOWED_ORIGIN says otherwise",
+    "verify": "bash scripts/verify.sh"
+   },
+   "status": "ready"
+  }
+ },
  "schema": 1
 }
