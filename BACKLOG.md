@@ -7,6 +7,7 @@
 | T-001 | done | The backend answers CORS only for https://rd.beam-stack.com unless ALLOWED_ORIGIN says otherwise | backend | any | normal | — |
 | T-002 | done | Every doc names rd.beam-stack.com as the SPA's origin, and DEPLOYMENT.md Part F proves CORS is locked | spec | any | normal | T-001 |
 | T-003 | done | The Streamlit surface is declared frozen and points its users at rd.beam-stack.com | frontend | any | normal | T-002 |
+| T-004 | ready | A running design job reports its current stage and, while PDFs render, its page counter | backend | any | normal | — |
 
 ### T-001 — The backend answers CORS only for https://rd.beam-stack.com unless ALLOWED_ORIGIN says otherwise
 - outcome: backend/app/main.py defaults ALLOWED_ORIGIN to https://rd.beam-stack.com instead of *, so an unset variable fails closed; local dev sets it explicitly
@@ -43,6 +44,19 @@
 - verify: bash scripts/verify.sh
 - depends-on: T-002 · area: frontend · machine: any · risk: normal
 - milestone: M-roaddesigner-01
+
+### T-004 — A running design job reports its current stage and, while PDFs render, its page counter
+- outcome: build_design takes an optional keyword-only progress callback called at each stage and once per PDF page, and GET /designs/{id} returns the running job's stage, page and pages
+- implements: docs/INVARIANTS.md §5 (road_design.py build_design, pdf_direct.py entry points) and §15 (The one engine change; backend/ request lifecycle)
+- done-when: build_design(..., progress=None) keeps its current positional and keyword order and its output unchanged when progress is omitted
+- done-when: with a progress callback, build_design calls it with a stage name for each of: tracé et ligne rouge, profils en travers, cubatures, DXF, XLSX, PDF plan, PDF profils en travers, and with (page, pages) once per page of each PDF
+- done-when: GET /designs/{id} returns optional stage, page and pages fields that are set while the job runs and null when queued
+- done-when: a test in tests/ records the callback's calls on the samples and asserts the stage order and that the PT PDF's last call has page == pages; a test in backend/tests/ asserts the three fields exist in GET /designs/{id}
+- done-when: §15 of CLAUDE.md and docs/INVARIANTS.md names progress as the second additive build_design kwarg, with the same text in each
+- done-when: bash scripts/verify.sh is green
+- verify: bash scripts/verify.sh
+- depends-on: — · area: backend · machine: any · risk: normal
+- milestone: M-roaddesigner-02
 
 ## Discovered
 
