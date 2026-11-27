@@ -75,3 +75,43 @@ def test_check_curve_overlap_clean():
                            [0.0, 5.0,   -5.0,   5.0]))
     v = VerticalAlignment(pvi, min_summit=1500, min_sag=1000)
     assert v.check_curve_overlap(min_straight_tangent=10.0) == []
+
+
+# ───────────────────────────────────────────── T-007 vectorised evaluation
+
+def _probe_pks(v, dense_pks):
+    """Dense grid plus every PVI, PVC, PVT and points outside the alignment."""
+    edges = [c[k] for c in v.curves for k in ("start", "end")]
+    lo, hi = v.pvi[0, 0], v.pvi[-1, 0]
+    return np.concatenate([dense_pks, v.pvi[:, 0], edges,
+                           [lo - 50.0, lo, hi, hi + 50.0]])
+
+
+def test_get_z_array_matches_get_z_on_samples(design):
+    v = design.v_align
+    pks = _probe_pks(v, np.asarray(design.dense_pks, dtype=float))
+    expected = np.array([v.get_z(pk) for pk in pks])
+    np.testing.assert_allclose(v.get_z_array(pks), expected, rtol=0, atol=1e-9)
+
+
+def test_get_z_array_overlapping_curves_first_wins():
+    # The REFT floor stretches both curves past each other; get_z takes the first.
+    pvi = np.column_stack(([0.0, 100.0, 200.0, 300.0], [100.0, 105.0, 100.0, 105.0]))
+    v = VerticalAlignment(pvi, min_summit=10000, min_sag=10000)
+    assert v.curves[0]["end"] > v.curves[1]["start"]
+    pks = np.linspace(-20.0, 320.0, 3401)
+    expected = np.array([v.get_z(pk) for pk in pks])
+    np.testing.assert_allclose(v.get_z_array(pks), expected, rtol=0, atol=1e-9)
+
+
+def test_objective_equals_pointwise_sum(design):
+    pvi = np.asarray(design.v_align.pvi, dtype=float)
+    z = pvi[:, 1] + np.linspace(-0.5, 0.5, len(pvi))  # off the optimum
+    v = VerticalAlignment(np.column_stack((pvi[:, 0], z)),
+                          min_summit=design.cfg.r_summit, min_sag=design.cfg.r_sag,
+                          safety_factor=design.cfg.safety_factor,
+                          max_radius=design.cfg.max_radius)
+    loop = sum(abs(v.get_z(pk) - g)
+               for pk, g in zip(design.dense_pks, design.dense_ground_z))
+    assert math.isclose(design._objective(z, list(pvi[:, 0])), loop,
+                        rel_tol=1e-12)

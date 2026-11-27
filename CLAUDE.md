@@ -305,7 +305,7 @@ Pure NumPy helpers used by plan rendering and cross-section sampling:
 - `_compute_curves()` walks consecutive grade pairs, picks per-PVI radius:
   - `R_max = safety_factor × min(prev_tangent, next_tangent) / |Δg|`
   - `R = max(R_max, REFT_minimum)` — floored, with a warning when REFT min wins.
-- `get_z(pk)` returns the projet elevation. Inside a curve it evaluates the parabola `y = y_PVC + g1·x + (g2−g1)/(2L) · x²`; on a tangent it does linear interpolation between PVIs; outside the alignment it clamps to the endpoints.
+- `get_z(pk)` returns the projet elevation. Inside a curve it evaluates the parabola `y = y_PVC + g1·x + (g2−g1)/(2L) · x²`; on a tangent it does linear interpolation between PVIs; outside the alignment it clamps to the endpoints. `get_z_array(pks)` is the same evaluation over an array, used by the SLSQP objective.
 - `check_curve_overlap(min_straight_tangent)` — returns a list of human-readable warnings when adjacent curves leave less than `min_straight_tangent` of actual straight between them. Used by the build to surface C6 violations in the XLSX REFT-warnings sheet.
 
 ### `road_designer/road_design.py` (≈ 470 lines)

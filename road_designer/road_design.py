@@ -223,7 +223,7 @@ class RoadDesign:
             safety_factor=self.cfg.safety_factor,
             max_radius=self.cfg.max_radius,
         )
-        proj = np.array([v_align.get_z(pk) for pk in self.dense_pks])
+        proj = v_align.get_z_array(self.dense_pks)
         return float(np.sum(np.abs(proj - self.dense_ground_z)))
 
     def _build_grade_constraints(self, pvi_pks):
