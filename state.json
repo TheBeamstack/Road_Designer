@@ -368,7 +368,7 @@
     "title": "The ligne-rouge optimiser evaluates its objective vectorised, so SLSQP finishes faster",
     "verify": "bash scripts/verify.sh"
    },
-   "status": "review"
+   "status": "done"
   },
   "T-008": {
    "approved": "",
