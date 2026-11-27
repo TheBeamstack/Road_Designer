@@ -9,7 +9,7 @@
 | T-003 | done | The Streamlit surface is declared frozen and points its users at rd.beam-stack.com | frontend | any | normal | T-002 |
 | T-004 | done | A running design job reports its current stage and, while PDFs render, its page counter | backend | any | normal | — |
 | T-005 | done | The SPA shows the running job's stage and PDF page counter | frontend | any | normal | T-004 |
-| T-006 | ready | build_design on the samples runs faster with unchanged outputs: no second cross-section pass, vectorised TN queries | backend | any | normal | T-004 |
+| T-006 | claimed | build_design on the samples runs faster with unchanged outputs: no second cross-section pass, vectorised TN queries | backend | any | normal | T-004 |
 | T-007 | blocked | The ligne-rouge optimiser evaluates its objective vectorised, so SLSQP finishes faster | backend | any | normal | T-006 |
 | T-008 | ready | A systemd timer kept in deploy/keep-alive/ pings the backend at a random 20-120 min, and the GitHub keep-alive workflow is gone | infra | box | normal | T-004 |
 
