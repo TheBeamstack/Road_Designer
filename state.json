@@ -215,7 +215,7 @@
    "blockers": [],
    "branch": "task/T-006-build-design-on-the-samples-runs-faster",
    "holder": "zayd",
-   "pr": 0,
+   "pr": 17,
    "spec": {
     "area": "backend",
     "depends_on": "T-004",
@@ -234,7 +234,7 @@
     "title": "build_design on the samples runs faster with unchanged outputs: no second cross-section pass, vectorised TN queries",
     "verify": "bash scripts/verify.sh"
    },
-   "status": "claimed"
+   "status": "review"
   },
   "T-007": {
    "approved": "",
