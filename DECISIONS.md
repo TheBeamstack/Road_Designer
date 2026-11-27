@@ -13,5 +13,6 @@
 - default-if-silent: hold
 - expires: 2026-12-02
 - directions-read: none in force
-- ANSWER:
+- ANSWER: hold
+- free-text: both permissions (B-20261127-07, B-20261127-08) are granted by the owner 2026-11-27; V1.0.0 first
 - answered: -
