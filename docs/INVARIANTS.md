@@ -38,6 +38,7 @@ FastAPI service on Hugging Face Spaces (`backend/`), and the local CLI (`python 
 13. [Roadmap status](#13-roadmap-status)
 14. [Version](#14-version)
 15. [Deployment architecture — three surfaces](#15-deployment-architecture--three-surfaces)
+16. [V 1.0.1 — interface language, consent, newsletter ask](#16-v-101--interface-language-consent-newsletter-ask)
 
 ---
 
@@ -914,3 +915,66 @@ change). It also covers the licence obligations that touch deployment (Notice Fi
 image, "Powered by Beamstack" on the two UIs) and the HF-PRO-vs-Cloud-Run cost trade-off. Point
 the user there for the actual deploy; keep this section as the technical reference for what each
 piece does.
+
+---
+
+## 16. V 1.0.1 — interface language, consent, newsletter ask
+
+Scope: the React SPA only (`frontends/react/`). The engine, the backend, the Streamlit app (frozen, § 15)
+and every deliverable (DXF, XLSX, both PDFs) are untouched: **drawings and files stay French** (§ 11).
+
+### 16.1 Interface language
+
+- The SPA's UI is **English by default**, with a FR/EN toggle in the header. The initial language is `fr`
+  when `navigator.language` starts with `fr`, else `en`; `<html lang>` follows the active language.
+- Every user-visible string lives in `src/i18n/en.ts` and `src/i18n/fr.ts`, read through one `useT()` hook;
+  a test asserts both tables have the same keys. No component carries a literal UI string.
+- The backend's French `stage` names (§ 15, `progress(stage)`) are mapped to English in the SPA, keyed by
+  the exact French string; an unknown stage is shown as received.
+- "Powered by Beamstack" is not translated (§ 11, licence).
+- The chosen language is persisted only under consent (§ 16.2).
+
+### 16.2 Consent
+
+- On a visit with no recorded choice, a FR/EN consent banner shows **before anything is stored**, with
+  two equal buttons, Accept and Refuse, and a link to the privacy notice (§ 16.5).
+- Refuse stores only the refusal itself (`rd.consent`), which is strictly necessary; nothing else is ever
+  written. Accept stores `rd.consent` and enables § 16.3.
+- `rd.consent` is `{choice, version, at}` in `localStorage`. The banner shows again when `at` is older than
+  `CONSENT_MAX_AGE_DAYS` or `version` differs from `CONSENT_VERSION`.
+- No cookie is set, no third-party script is loaded, and nothing in § 16 is sent to any server.
+
+### 16.3 Anonymous run count
+
+- Under consent only, `rd.usage` in `localStorage` holds `{visits, generations, last_seen, asked}`. A visit
+  is counted on page load when `last_seen` is older than `VISIT_GAP_MINUTES`; `generations` counts jobs
+  that reach `done`. These counts are the browser's own: no identifier, no server-side counter.
+
+### 16.4 Newsletter ask
+
+- Shown on a download click when consent is `accepted`, `visits ≥ 2`, `generations ≥ 2` and `asked` is
+  below `NEWSLETTER_ASK_MAX_SHOWS`; showing it increments `asked`.
+- A FR/EN modal with two buttons: Subscribe opens `NEWSLETTER_SIGNUP_URL` in a new tab
+  (`rel="noopener noreferrer"`) **and** downloads; No thanks downloads. Closing the modal downloads.
+  **Both buttons always download.**
+
+### 16.5 Privacy notice
+
+- `/privacy` on the SPA (Cloudflare Pages SPA fallback in `public/_redirects`), FR/EN, linked from the site
+  footer and the consent banner. It names each `localStorage` key of § 16.2–§ 16.3, says nothing leaves the
+  browser, and says uploaded files are processed by the backend and dropped with their job after 30 minutes
+  (§ 15). Its wording, the banner's and the ask's are approved by the owner before release.
+
+### 16.6 Configuration
+
+The values below live in `frontends/react/src/config.ts`, each marked `TO-CONFIRM`, never in a component:
+
+| Name | Value |
+|---|---|
+| `CONSENT_VERSION` | `1` |
+| `CONSENT_MAX_AGE_DAYS` | `395` (13 months) |
+| `VISIT_GAP_MINUTES` | `30` |
+| `NEWSLETTER_ASK_MAX_SHOWS` | `1` |
+| `NEWSLETTER_SIGNUP_URL` | `https://beam-stack.com/#subscribe-form` (today's `ContactFooter.tsx` link) |
+
+The SPA's logic in § 16.2–§ 16.4 is unit-tested with `vitest`, run by `scripts/verify.sh`.
