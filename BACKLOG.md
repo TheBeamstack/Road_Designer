@@ -8,6 +8,7 @@
 | T-002 | done | Every doc names rd.beam-stack.com as the SPA's origin, and DEPLOYMENT.md Part F proves CORS is locked | spec | any | normal | T-001 |
 | T-003 | done | The Streamlit surface is declared frozen and points its users at rd.beam-stack.com | frontend | any | normal | T-002 |
 | T-004 | ready | A running design job reports its current stage and, while PDFs render, its page counter | backend | any | normal | — |
+| T-005 | blocked | The SPA shows the running job's stage and PDF page counter | frontend | any | normal | T-004 |
 
 ### T-001 — The backend answers CORS only for https://rd.beam-stack.com unless ALLOWED_ORIGIN says otherwise
 - outcome: backend/app/main.py defaults ALLOWED_ORIGIN to https://rd.beam-stack.com instead of *, so an unset variable fails closed; local dev sets it explicitly
@@ -56,6 +57,17 @@
 - done-when: bash scripts/verify.sh is green
 - verify: bash scripts/verify.sh
 - depends-on: — · area: backend · machine: any · risk: normal
+- milestone: M-roaddesigner-02
+
+### T-005 — The SPA shows the running job's stage and PDF page counter
+- outcome: While a job runs, JobStatusPanel shows the stage GET /designs/{id} reports and, during PDF rendering, page k / N, instead of one fixed label
+- implements: docs/INVARIANTS.md §15 (frontends/react/: useDesignJob polling, JobStatusPanel)
+- done-when: frontends/react/src/lib/types.ts JobStatus carries optional stage, page and pages matching the backend schema
+- done-when: JobStatusPanel renders the stage text while status is running and appends page k / N when page and pages are set, and falls back to the current label when stage is null
+- done-when: the polling interval in useDesignJob.ts is unchanged at 2000 ms
+- done-when: bash scripts/verify.sh is green, including the React build
+- verify: bash scripts/verify.sh
+- depends-on: T-004 · area: frontend · machine: any · risk: normal
 - milestone: M-roaddesigner-02
 
 ## Discovered

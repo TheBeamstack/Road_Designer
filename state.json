@@ -64,7 +64,7 @@
  "discovered": [],
  "lane": "Road_Designer",
  "layout": [],
- "next_id": 5,
+ "next_id": 6,
  "parked": [
   "- 2026-11-27 The React app builds on tailwindcss 4 — frontends/react uses tailwindcss 4 with @tailwindcss/postcss, its postcss.config.js and tailwind config migrated, and the UI renders as before · implements: docs/INVARIANTS.md §15 frontends/react/ — Vite + React + TypeScript + Tailwind",
   "- 2026-11-27 The React app builds on vite 8 with a vite-8-compatible @vitejs/plugin-react — frontends/react pins vite 8.x and an @vitejs/plugin-react whose peer range includes it, in one lockfile, and the build output is unchanged in shape · implements: docs/INVARIANTS.md §15 frontends/react/ — Vite + React + TypeScript + Tailwind"
@@ -169,6 +169,31 @@
     "outcome": "build_design takes an optional keyword-only progress callback called at each stage and once per PDF page, and GET /designs/{id} returns the running job's stage, page and pages",
     "risk": "normal",
     "title": "A running design job reports its current stage and, while PDFs render, its page counter",
+    "verify": "bash scripts/verify.sh"
+   },
+   "status": "ready"
+  },
+  "T-005": {
+   "approved": "",
+   "blockers": [],
+   "branch": "",
+   "holder": "",
+   "pr": 0,
+   "spec": {
+    "area": "frontend",
+    "depends_on": "T-004",
+    "done_when": [
+     "frontends/react/src/lib/types.ts JobStatus carries optional stage, page and pages matching the backend schema",
+     "JobStatusPanel renders the stage text while status is running and appends page k / N when page and pages are set, and falls back to the current label when stage is null",
+     "the polling interval in useDesignJob.ts is unchanged at 2000 ms",
+     "bash scripts/verify.sh is green, including the React build"
+    ],
+    "implements": "docs/INVARIANTS.md §15 (frontends/react/: useDesignJob polling, JobStatusPanel)",
+    "machine": "any",
+    "milestone": "M-roaddesigner-02",
+    "outcome": "While a job runs, JobStatusPanel shows the stage GET /designs/{id} reports and, during PDF rendering, page k / N, instead of one fixed label",
+    "risk": "normal",
+    "title": "The SPA shows the running job's stage and PDF page counter",
     "verify": "bash scripts/verify.sh"
    },
    "status": "ready"
