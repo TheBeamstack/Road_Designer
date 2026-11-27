@@ -125,8 +125,8 @@
   "T-003": {
    "approved": "",
    "blockers": [],
-   "branch": "",
-   "holder": "",
+   "branch": "task/T-003-the-streamlit-surface-is-declared-frozen",
+   "holder": "zayd",
    "pr": 0,
    "spec": {
     "area": "frontend",
@@ -145,7 +145,7 @@
     "title": "The Streamlit surface is declared frozen and points its users at rd.beam-stack.com",
     "verify": "bash scripts/verify.sh"
    },
-   "status": "ready"
+   "status": "claimed"
   }
  },
  "schema": 1
