@@ -11,6 +11,7 @@
 | T-005 | blocked | The SPA shows the running job's stage and PDF page counter | frontend | any | normal | T-004 |
 | T-006 | blocked | build_design on the samples runs faster with unchanged outputs: no second cross-section pass, vectorised TN queries | backend | any | normal | T-004 |
 | T-007 | blocked | The ligne-rouge optimiser evaluates its objective vectorised, so SLSQP finishes faster | backend | any | normal | T-006 |
+| T-008 | blocked | A systemd timer kept in deploy/keep-alive/ pings the backend at a random 20-120 min, and the GitHub keep-alive workflow is gone | infra | box | normal | T-004 |
 
 ### T-001 — The backend answers CORS only for https://rd.beam-stack.com unless ALLOWED_ORIGIN says otherwise
 - outcome: backend/app/main.py defaults ALLOWED_ORIGIN to https://rd.beam-stack.com instead of *, so an unset variable fails closed; local dev sets it explicitly
@@ -94,6 +95,18 @@
 - done-when: bash scripts/verify.sh is green
 - verify: bash scripts/verify.sh
 - depends-on: T-006 · area: backend · machine: any · risk: normal
+- milestone: M-roaddesigner-02
+
+### T-008 — A systemd timer kept in deploy/keep-alive/ pings the backend at a random 20-120 min, and the GitHub keep-alive workflow is gone
+- outcome: Road_Designer ships a user-level systemd service and timer that curl the backend's /health with a fresh random delay of 20 to 120 minutes after each run, with install steps for box 1, and .github/workflows/keep-alive-backend.yml is deleted
+- implements: docs/INVARIANTS.md §15 (backend/ Keep-alive bullet; Env vars / secrets table) and DEPLOYMENT.md Part E
+- done-when: deploy/keep-alive/ holds a .service that curls a health URL read from an environment file with --max-time 20 and a .timer whose OnUnitActiveSec and RandomizedDelaySec give each interval a new random length between 20 and 120 minutes
+- done-when: systemd-analyze --user verify passes on both unit files
+- done-when: .github/workflows/keep-alive-backend.yml is deleted and git grep -n BACKEND_HEALTH_URL names no GitHub secret
+- done-when: §15 of CLAUDE.md and docs/INVARIANTS.md, DEPLOYMENT.md Part E and backend/README.md describe the box timer and its install commands, with CLAUDE.md and docs/INVARIANTS.md carrying the same text
+- done-when: bash scripts/verify.sh is green
+- verify: bash scripts/verify.sh && systemd-analyze --user verify deploy/keep-alive/*.service deploy/keep-alive/*.timer
+- depends-on: T-004 · area: infra · machine: box · risk: normal
 - milestone: M-roaddesigner-02
 
 ## Discovered

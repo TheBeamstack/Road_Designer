@@ -19,6 +19,7 @@ none
 - T-005 — depends on T-004 (ready)
 - T-006 — depends on T-004 (ready)
 - T-007 — depends on T-006 (ready)
+- T-008 — depends on T-004 (ready)
 
 ## Open blockers
 
