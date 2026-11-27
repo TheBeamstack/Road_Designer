@@ -64,7 +64,7 @@
    "blockers": [],
    "branch": "task/T-001-the-backend-answers-cors-only-for-https",
    "holder": "zayd",
-   "pr": 0,
+   "pr": 12,
    "spec": {
     "area": "backend",
     "done_when": [
@@ -82,7 +82,7 @@
     "title": "The backend answers CORS only for https://rd.beam-stack.com unless ALLOWED_ORIGIN says otherwise",
     "verify": "bash scripts/verify.sh"
    },
-   "status": "claimed"
+   "status": "review"
   },
   "T-002": {
    "approved": "",
