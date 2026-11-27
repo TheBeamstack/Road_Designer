@@ -208,7 +208,7 @@
     "title": "The SPA shows the running job's stage and PDF page counter",
     "verify": "bash scripts/verify.sh"
    },
-   "status": "review"
+   "status": "done"
   },
   "T-006": {
    "approved": "",

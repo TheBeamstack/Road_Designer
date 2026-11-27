@@ -8,7 +8,7 @@ none
 
 ## Review
 
-- T-005 PR #16 by zayd — reviewer (any): PR #16
+none
 
 ## Awaiting approval (R93)
 
