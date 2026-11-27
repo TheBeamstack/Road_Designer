@@ -4,11 +4,12 @@ next: reviewer (any): PR #17 — T-006
 
 ## Claims
 
-- T-008 zayd on task/T-008-a-systemd-timer-kept-in-deploy-keep-aliv
+none
 
 ## Review
 
 - T-006 PR #17 by zayd — reviewer (any): PR #17
+- T-008 PR #18 by zayd — reviewer (box): PR #18
 
 ## Awaiting approval (R93)
 
