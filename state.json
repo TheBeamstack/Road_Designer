@@ -312,8 +312,16 @@
     "B-20261127-10"
    ],
    "branch": "task/T-006-build-design-on-the-samples-runs-faster",
-   "holder": "zayd",
+   "holder": "",
    "pr": 17,
+   "released": [
+    {
+     "at": "2026-11-27T20:35Z",
+     "by": "brahim",
+     "holder": "zayd",
+     "reason": "B-20261127-10: done-when 3 is unsatisfiable as written (main's own build_design differs x86_64 vs aarch64, rel 5.0e-4); released so the steward can correct the criterion; branch and PR #17 kept for zayd"
+    }
+   ],
    "spec": {
     "area": "backend",
     "depends_on": "T-004",
@@ -332,7 +340,7 @@
     "title": "build_design on the samples runs faster with unchanged outputs: no second cross-section pass, vectorised TN queries",
     "verify": "bash scripts/verify.sh"
    },
-   "status": "claimed"
+   "status": "ready"
   },
   "T-007": {
    "approved": "",
