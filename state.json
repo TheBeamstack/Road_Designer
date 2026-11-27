@@ -82,7 +82,7 @@
     "title": "The backend answers CORS only for https://rd.beam-stack.com unless ALLOWED_ORIGIN says otherwise",
     "verify": "bash scripts/verify.sh"
    },
-   "status": "review"
+   "status": "done"
   },
   "T-002": {
    "approved": "",

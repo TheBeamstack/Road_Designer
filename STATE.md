@@ -1,6 +1,6 @@
 # STATE — Road_Designer, rendered from `state.json` by scripts/state.py; never edited by hand
 
-next: reviewer (any): PR #12 — T-001
+next: builder (any) — T-002
 
 ## Claims
 
@@ -8,7 +8,7 @@ none
 
 ## Review
 
-- T-001 PR #12 by zayd — reviewer (any): PR #12
+none
 
 ## Awaiting approval (R93)
 
@@ -16,7 +16,6 @@ none
 
 ## BLOCKED
 
-- T-002 — depends on T-001 (review)
 - T-003 — depends on T-002 (ready)
 
 ## Open blockers
