@@ -10,6 +10,12 @@ const STATUS_META: Record<JobStatus["status"], { label: string; dot: string }> =
   error: { label: "Erreur", dot: "bg-accent" },
 };
 
+export function statusLabel(job: JobStatus): string {
+  if (job.status !== "running" || !job.stage) return STATUS_META[job.status].label;
+  const counter = job.page != null && job.pages != null ? ` — page ${job.page} / ${job.pages}` : "";
+  return `${job.stage}${counter}…`;
+}
+
 const DOWNLOADS: { kind: keyof NonNullable<JobStatus["files"]>; label: string; filename: string }[] = [
   { kind: "dxf", label: "DXF", filename: "road_design.dxf" },
   { kind: "xlsx", label: "XLSX", filename: "tableau_profil_en_long.xlsx" },
@@ -58,7 +64,7 @@ export function JobStatusPanel({ job }: { job: JobStatus | null }) {
     <Card>
       <CardHeader className="flex flex-row items-center gap-2">
         <span className={`h-2.5 w-2.5 rounded-full ${meta.dot}`} aria-hidden />
-        <CardTitle>{meta.label}</CardTitle>
+        <CardTitle>{statusLabel(job)}</CardTitle>
       </CardHeader>
       <CardContent className="flex flex-col gap-4">
         {job.status === "error" && (

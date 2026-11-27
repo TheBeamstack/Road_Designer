@@ -848,7 +848,9 @@ the independent variable, etc.) still applies untouched to any future engine wor
   not read at runtime). On Cloudflare Pages this must be set in the dashboard under
   **Settings → Environment variables** (Production and Preview), not in `wrangler.toml`.
 - `src/hooks/useDesignJob.ts` polls `GET /designs/{id}` every 2 s until `done`/`error` — mirrors
-  the backend's own job-lifecycle contract, no websockets.
+  the backend's own job-lifecycle contract, no websockets. `JobStatusPanel` titles a running job
+  with its reported `stage` (plus `page k / N` during PDF rendering), or the fixed label while
+  `stage` is null.
 - The plan/profile/Bruckner charts (`src/components/chart/InteractiveLineChart.tsx`) are a
   from-scratch SVG component (wheel-zoom, drag-pan, nearest-point hover) — no charting library
   dependency, kept deliberately small for a static-hosting bundle-size budget.
