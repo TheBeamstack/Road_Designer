@@ -2,7 +2,7 @@
  "blockers": {
   "B-20261127-01": {
    "by": "hmdnah",
-   "cleared": "-",
+   "cleared": "2026-11-27T00:40Z",
    "item": "lane Road_Designer",
    "key": "start-no-current-state",
    "need": "steward: commit docs/CURRENT_STATE.md, the path .agent.toml [paths] state names, to Road_Designer main so agent_start.py --seat hmdnah --review can run",
