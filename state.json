@@ -347,8 +347,8 @@
   "T-007": {
    "approved": "",
    "blockers": [],
-   "branch": "",
-   "holder": "",
+   "branch": "task/T-007-the-ligne-rouge-optimiser-evaluates-its",
+   "holder": "zayd",
    "pr": 0,
    "spec": {
     "area": "backend",
@@ -368,7 +368,7 @@
     "title": "The ligne-rouge optimiser evaluates its objective vectorised, so SLSQP finishes faster",
     "verify": "bash scripts/verify.sh"
    },
-   "status": "ready"
+   "status": "claimed"
   },
   "T-008": {
    "approved": "",
