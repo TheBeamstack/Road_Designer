@@ -21,4 +21,4 @@ none
 
 ## Open blockers
 
-- B-20261127-08 systemd-analyze --user verify refused in the box review session: T-008 done-when 2 unexecuted — need: permission: allow hmdnah's box session to run systemd-analyze --user verify deploy/keep-alive/road-designer-keep-alive.service deploy/keep-alive/road-designer-keep-alive.timer
+none
