@@ -86,6 +86,10 @@ export interface JobStatus {
   files: JobFiles | null;
   warnings: string[] | null;
   error: string | null;
+  // Set while running: the build stage, and during PDF rendering page k of N (N counts the cover).
+  stage?: string | null;
+  page?: number | null;
+  pages?: number | null;
 }
 
 export interface PreviewPayload {
