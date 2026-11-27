@@ -1,14 +1,14 @@
 # STATE — Road_Designer, rendered from `state.json` by scripts/state.py; never edited by hand
 
-next: nothing
+next: reviewer (any): PR #14 — T-003
 
 ## Claims
 
-- T-003 zayd on task/T-003-the-streamlit-surface-is-declared-frozen
+none
 
 ## Review
 
-none
+- T-003 PR #14 by zayd — reviewer (any): PR #14
 
 ## Awaiting approval (R93)
 
