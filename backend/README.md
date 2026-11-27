@@ -37,7 +37,7 @@ pytest backend/tests/ -q
 
 | Method & path | Purpose |
 |---|---|
-| `GET /health` | Liveness check — also what the keep-alive GitHub Action pings |
+| `GET /health` | Liveness check — also what the `deploy/keep-alive/` timer pings |
 | `POST /designs` | Multipart: axe file + (terrain CSV **or** synth-terrain params) + `DesignConfigIn`/`CartoucheInfoIn` JSON. Returns `202` + `{job_id}` immediately; the actual build runs in a background thread. |
 | `GET /designs/{id}` | Job status: `queued\|running\|done\|error`, plus REFT warnings and file availability once `done`. |
 | `GET /designs/{id}/files/{kind}` | Streams one of `dxf\|xlsx\|pdf_plan\|pdf_pt`. |
@@ -83,7 +83,16 @@ The full step-by-step is in the repo-root [`DEPLOYMENT.md`](../DEPLOYMENT.md). I
   Docker Space at all; the `CPU Basic` hardware it then runs on is $0/hour. SDK = Docker,
   `Dockerfile` at the Space repo's own root (a small assembled subset of this repo is pushed
   there — see Part A.4–A.5), port 7860 auto-selected. Sleeps after 48 h idle on `CPU Basic`
-  (unconfigurable) — Part E covers a free keep-alive ping.
+  (unconfigurable) — Part E installs a free keep-alive timer on box 1: a user-level systemd
+  service curling `/health` from `deploy/keep-alive/`, re-run every 20–120 min at random:
+  ```bash
+  mkdir -p ~/.config/systemd/user ~/.config/road-designer
+  cp deploy/keep-alive/road-designer-keep-alive.{service,timer} ~/.config/systemd/user/
+  cp deploy/keep-alive/keep-alive.env.example ~/.config/road-designer/keep-alive.env  # set the URL
+  systemctl --user daemon-reload
+  systemctl --user enable --now road-designer-keep-alive.timer
+  loginctl enable-linger "$USER"
+  ```
 - **Later-promotion path: Google Cloud Run** (Part G) — `gcloud run deploy road-designer-api
   --source . --region <r> --allow-unauthenticated --memory 1Gi --no-cpu-throttling` from the
   repo root. Free monthly compute allotment covers light/moderate use; scales to zero. Worth
@@ -98,7 +107,7 @@ repoint `VITE_API_BASE_URL` on Cloudflare Pages, re-set `ALLOWED_ORIGIN`.
 |---|---|---|
 | Backend host (HF: Space Variables; Cloud Run if promoted later: `--set-env-vars`) | `ALLOWED_ORIGIN` | The SPA's origin `https://rd.beam-stack.com` (the default when unset); comma-add the `*.pages.dev` URL only to also allow the Cloudflare fallback |
 | Cloudflare Pages dashboard | `VITE_API_BASE_URL` | The backend's public URL, no trailing slash (see `frontends/react/README.md`) |
-| GitHub repo secret (optional, recommended) | `BACKEND_HEALTH_URL` | `https://<space>.hf.space/health` — used by `.github/workflows/keep-alive-backend.yml` to stop the current HF Space from sleeping; free to run there. **Not** for a Cloud Run deployment with `--no-cpu-throttling`. |
+| Box 1, `~/.config/road-designer/keep-alive.env` (optional, recommended) | `BACKEND_HEALTH_URL` | `https://<space>.hf.space/health` — read by the `deploy/keep-alive/` timer to stop the current HF Space from sleeping; free to run there. **Not** for a Cloud Run deployment with `--no-cpu-throttling`. |
 
 ## Directory layout
 
