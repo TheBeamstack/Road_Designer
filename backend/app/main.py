@@ -7,9 +7,10 @@ root, so ``road_designer`` is importable).
 
 Deployment target: Hugging Face Spaces (Docker container), built from the
 repo-root ``Dockerfile``; Google Cloud Run is the documented later-promotion
-path. See DEPLOYMENT.md. CORS origin is read from the ``ALLOWED_ORIGIN`` env
-var — set it to the deployed Cloudflare Pages URL after the first real deploy
-(placeholder default below is permissive for local dev only).
+path. See DEPLOYMENT.md. CORS origins are read from the ``ALLOWED_ORIGIN`` env
+var (comma-separated); unset, it defaults to ``https://rd.beam-stack.com`` so a
+missing variable fails closed. Local dev sets it explicitly, e.g.
+``ALLOWED_ORIGIN=http://localhost:5173``.
 """
 from __future__ import annotations
 
@@ -23,14 +24,14 @@ from fastapi.middleware.cors import CORSMiddleware
 from . import jobs
 from .routers import designs, health, preview, samples
 
-# TODO(user): after your first real Cloudflare Pages deploy, set this env var
-# on the backend service (HF Space: Settings > Variables and secrets; Cloud Run
-# if later promoted: `gcloud run services update ... --update-env-vars
-# ALLOWED_ORIGIN=...`) to the exact deployed origin, e.g.
-# "https://road-designer.pages.dev". Comma-separate multiple origins. Defaults
-# to "*" (dev-only — do not ship to production unpinned).
-ALLOWED_ORIGIN = os.environ.get("ALLOWED_ORIGIN", "*")
-_origins = [o.strip() for o in ALLOWED_ORIGIN.split(",")] if ALLOWED_ORIGIN != "*" else ["*"]
+# TODO(user): set this env var on the backend service (HF Space: Settings >
+# Variables and secrets; Cloud Run if later promoted: `gcloud run services
+# update ... --update-env-vars ALLOWED_ORIGIN=...`) to the exact deployed
+# origin(s), comma-separated. Unset or empty, it defaults to
+# "https://rd.beam-stack.com" and every other origin gets no CORS header.
+DEFAULT_ALLOWED_ORIGIN = "https://rd.beam-stack.com"
+ALLOWED_ORIGIN = os.environ.get("ALLOWED_ORIGIN", "").strip() or DEFAULT_ALLOWED_ORIGIN
+_origins = [o.strip() for o in ALLOWED_ORIGIN.split(",") if o.strip()]
 
 
 @asynccontextmanager

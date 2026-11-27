@@ -320,7 +320,7 @@ applies to any fork or third-party deployment too, not just yours.
 
 ## 5. Part C — Close the loop: lock down CORS
 
-Right now the backend accepts any origin (`ALLOWED_ORIGIN` defaults to `"*"`). Point it at your
+Unset, `ALLOWED_ORIGIN` defaults to `https://rd.beam-stack.com` and refuses every other origin. Point it at your
 SPA's real origin — the custom domain from B.5:
 
 1. Go to your Space → **Settings** → **Variables and secrets** → **New variable**.

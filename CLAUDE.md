@@ -772,8 +772,8 @@ the independent variable, etc.) still applies untouched to any future engine wor
   reports `queued|running|done|error` plus warnings once done. `GET /designs/{id}/files/{kind}`
   streams one of `dxf|xlsx|pdf_plan|pdf_pt`. `GET /designs/{id}/preview` returns the JSON the
   React SVG charts consume (built via `return_design=True`).
-- **CORS** is controlled by the `ALLOWED_ORIGIN` env var (defaults to `"*"` — fine for local dev,
-  **must** be tightened to the real Cloudflare Pages origin before/at first production deploy).
+- **CORS** is controlled by the `ALLOWED_ORIGIN` env var (comma-separated); unset, it defaults to
+  `https://rd.beam-stack.com`, so a missing variable fails closed; local dev sets it explicitly.
 - **Company-name validation is not a new rule** — `CartoucheInfoIn.company_name` in
   `backend/app/schemas.py` mirrors the same non-empty check `build_design()` already enforces; it
   just surfaces earlier, as an HTTP 422, instead of a 500 from inside the engine.
@@ -840,8 +840,8 @@ the independent variable, etc.) still applies untouched to any future engine wor
 ```bash
 # FastAPI backend (repo root)
 pip install -r backend/requirements.txt
-uvicorn backend.app.main:app --reload
-# → http://localhost:8000, CORS defaults to "*" for local dev
+ALLOWED_ORIGIN=http://localhost:5173 uvicorn backend.app.main:app --reload
+# → http://localhost:8000; unset, ALLOWED_ORIGIN defaults to https://rd.beam-stack.com
 
 # React frontend (frontends/react/)
 cp .env.example .env.local        # VITE_API_BASE_URL=http://localhost:8000
