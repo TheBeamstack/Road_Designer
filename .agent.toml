@@ -27,9 +27,13 @@ summary_adapter = "backlog"
 [review]
 two_step_high_risk = false
 
-# Owner grant, D-20261127-01 (2026-11-27): the bench (B-20261127-07) and the unit check (B-20261127-08).
+# Owner grant, D-20261127-01 (2026-11-27): the bench (B-20261127-07) and the unit check (B-20261127-08),
+# exact: no wildcard, the needs' args only.
 [tools]
-allow = ["Bash(/home/ubuntu/.cache/roaddesigner-venv/bin/python *)", "Bash(systemd-analyze *)"]
+allow = [
+  "Bash(/home/ubuntu/.cache/roaddesigner-venv/bin/python /home/ubuntu/projects/Road_Designer/scripts/bench_build.py --runs 5)",
+  "Bash(systemd-analyze --user verify deploy/keep-alive/road-designer-keep-alive.service deploy/keep-alive/road-designer-keep-alive.timer)",
+]
 
 # Fallback author outside a seat's turn; a row in `diwan/scripts/accounts.toml` (R53).
 [git]
